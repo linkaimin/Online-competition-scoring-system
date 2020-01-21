@@ -50,7 +50,24 @@
             </el-menu>
 
         </el-aside>
-       
+                   <el-card id="card" class="box-card">
+              <div slot="header" class="clearfix">
+                <span>新增用户</span> 
+              </div>
+                <div class="item">
+              负责活动：<el-input v-model="activity" placeholder="请输入内容"></el-input>
+               </div>
+              <div class="item">
+              姓名：<el-input v-model="name" placeholder="请输入内容"></el-input>
+               </div><div class="item">
+               账号：<el-input v-model="phone" placeholder="请输入内容"></el-input>
+              </div><div class="item">
+               单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
+              </div>
+              <div id='btn'>
+               <el-button id="button"  type="primary" plain>确定</el-button>
+               </div>
+            </el-card>
       </el-container>
     </el-container>
   </div>
@@ -60,7 +77,10 @@
 export default {
   data(){
     return{
-      dynamicTags: []
+      name:"",
+      phone:"",
+      unit:"",
+      activity:""
     }
   },
   mounted(){
@@ -87,6 +107,41 @@ export default {
 </script>
 
 <style>
+#btn{
+  margin:5% auto;
+  width:68px;
+}
+.item{
+
+  text-align:center; 
+}
+.el-input{
+  width: 70%;
+  margin: 1%;
+}
+  #card{
+    margin:3% auto;
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);

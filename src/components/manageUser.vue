@@ -50,7 +50,56 @@
             </el-menu>
 
         </el-aside>
-       
+        <el-table
+    :data="tableData"
+    style="width: 100%">
+    <el-table-column
+      label="负责活动"
+      width="180">
+      <template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="账号"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.phone }}</el-tag>
+          </div> 
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="姓名"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
+     <el-table-column
+      label="单位"
+      width="230">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.unit }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
       </el-container>
     </el-container>
   </div>
@@ -60,13 +109,39 @@
 export default {
   data(){
     return{
-      dynamicTags: []
+       tableData: [{
+          date: '大创',
+          phone:'12345',
+          name: '王小虎',
+          unit: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '大创',
+          name: '王小虎',
+          phone:'12345',
+          unit: '上海市普陀区金沙江路 1517 弄'
+        }, {
+          date: '大创',
+          phone:'12345',
+          name: '王小虎',
+          unit: '上海市普陀区金沙江路 1519 弄'
+        }, {
+          date: '大创',
+          phone:'12345',
+          name: '王小虎',
+          unit: '上海市普陀区金沙江路 1516 弄'
+        }]
     }
   },
   mounted(){
 
   },
   methods: {
+       handleEdit(index, row) {
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+      },
     exit: function () {
       sessionStorage.clear()
         this.$message({

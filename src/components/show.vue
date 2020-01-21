@@ -50,7 +50,59 @@
             </el-menu>
 
         </el-aside>
-       
+    <template>
+  <el-table
+    :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+    style="width: 100%">
+    <el-table-column
+      label="活动名称"
+      prop="activity">
+    </el-table-column>
+    <el-table-column
+      label="排名"
+      prop="rank">
+    </el-table-column>
+     <el-table-column
+      label="项目名称"
+      prop="project">
+    </el-table-column>
+    <el-table-column
+      label="负责人"
+      prop="leader">
+    </el-table-column>
+     <el-table-column
+      label="所属单位"
+      prop="unit">
+    </el-table-column>
+     <el-table-column
+      label="综合得分"
+      prop="score">
+    </el-table-column>
+    <el-table-column
+      align="right">
+      <template slot="header">
+       <el-select id="select" v-model="val" placeholder="请选择所属活动">
+    <el-option
+      v-for="item in options"
+      :key="item.val"
+      :label="item.label"
+      :value="item.val">
+    </el-option>
+  </el-select>
+      </template>
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+</template>
+
       </el-container>
     </el-container>
   </div>
@@ -60,13 +112,45 @@
 export default {
   data(){
     return{
-      dynamicTags: []
+      val:'',
+       tableData: [{
+          activity:'大创',
+          rank: '1',
+          project:'12345',
+          leader: '王小虎',
+          unit: '100',
+          score:'100'
+        }, {activity:'大创',
+           rank: '1',
+          project:'12345',
+          leader: '王小虎',
+          unit: '100',
+          score:'100'
+        }, {activity:'大创',
+            rank: '1',
+          project:'12345',
+          leader: '王小虎',
+          unit: '100',
+          score:'100'
+        }, {activity:'大创',
+             rank: '1',
+          project:'12345',
+          leader: '王小虎',
+          unit: '100',
+          score:'100'
+        }]
     }
   },
   mounted(){
 
   },
   methods: {
+       handleEdit(index, row) {
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+      },
     exit: function () {
       sessionStorage.clear()
         this.$message({

@@ -50,7 +50,32 @@
             </el-menu>
 
         </el-aside>
-       
+        
+           <el-main>
+               
+ 活动名称：<el-select id="select" v-model="val" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.val"
+      :label="item.label"
+      :value="item.val">
+    </el-option>
+  </el-select>
+    <el-col :span="24" class="warp-main" v-loading="">
+      <el-form :inline="true" class="demo-form-inline" v-for="(item, i) in FormArr" :key="i">
+        <el-form-item label="评分方向：">
+          <el-input v-model="item.value" placeholder="例：创新性"></el-input>
+        </el-form-item>
+         <el-form-item label="总分占比：">
+          <el-input v-model="item.part" placeholder="例：0.3"></el-input>
+        </el-form-item>
+        <el-button type="primary" @click="Delete(item.index)">删除</el-button>
+      </el-form>
+      <el-button type="primary" @click="AddForm">增加更多</el-button>
+      <el-button type="primary" @click="make">确定</el-button>
+    </el-col>
+  </el-main>
+
       </el-container>
     </el-container>
   </div>
@@ -58,15 +83,54 @@
 
 <script>
 export default {
+   
   data(){
-    return{
-      dynamicTags: []
+    return{ 
+        val:'',
+         options: [{
+          val: '选项1',
+          label: '黄金糕'
+        }, {
+          val: '选项2',
+          label: '双皮奶'
+        }, {
+          val: '选项3',
+          label: '蚵仔煎'
+        }, {
+          val: '选项4',
+          label: '龙须面'
+        }, {
+          val: '选项5',
+          label: '北京烤鸭'
+        }],
+       FormArr: [
+        {
+          index: 0,
+          value: '',
+          part:''
+        }
+      ]
     }
   },
-  mounted(){
 
-  },
   methods: {
+        make:function() {
+        },
+	   AddForm :function() {
+      this.FormArr.push({
+        index: this.FormArr.length,
+        value: '',
+        part:''
+      })
+      console.log(this.FormArr)
+    },
+    Delete:function (index) {
+      this.FormArr.splice(index, 1)
+      for (let i in this.FormArr) {
+        this.FormArr[i].index = i
+      }
+    },
+
     exit: function () {
       sessionStorage.clear()
         this.$message({
@@ -77,16 +141,16 @@ export default {
           this.$router.push('/')
     }
    
-    },
-    handleClose(tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-    },
-   
   }
+    }
+  
 
 </script>
 
 <style>
+#select{
+    margin: 10%
+}
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
