@@ -12,16 +12,15 @@
       <el-container>
         <el-aside width="220px" class="aside">
      <div class="mean-top"><i class="el-icon-menu"></i> 功能导航</div>
-          <el-menu  default-active="1"
-
+          <el-menu  router :default-active="$route.path"
                     background-color="#dbe9f1"
-
-                    active-text-color="#6ec673" id="menu">
+                    active-text-color="#6ec673" id="menu"
+                    >
             <el-submenu index="4">
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
-              <el-menu-item-group>
-                <el-menu-item index="4-1"> <router-link to="/show"><i class="el-icon-tickets"></i>评估结果展示</router-link></el-menu-item>
-                <el-menu-item index="4-2"> <router-link to="/formulate"><i class="el-icon-tickets"></i>评估标准制定</router-link></el-menu-item>
+              <el-menu-item-group >
+                <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
+                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
               
               </el-menu-item-group>
             </el-submenu>
@@ -29,9 +28,9 @@
             <el-submenu index="8">
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
-                <el-menu-item index="8-1"> <router-link to="/newActivity"><i class="el-icon-tickets"></i>新增活动</router-link></el-menu-item>
-                <el-menu-item index="8-2"> <router-link to="/addActivity"><i class="el-icon-tickets"></i>活动项目添加</router-link></el-menu-item>
-                <el-menu-item index="8-3"> <router-link to="/manageActivity"><i class="el-icon-tickets"></i>活动项目管理</router-link></el-menu-item>
+                <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
+                <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
                
                
 
@@ -40,15 +39,14 @@
             <el-submenu index="9">
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
-                <el-menu-item index="9-1"> <router-link to="/newUser"><i class="el-icon-tickets"></i>新增用户</router-link></el-menu-item>
-                <el-menu-item index="9-2"> <router-link to="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</router-link></el-menu-item>
+                <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 
               </el-menu-item-group>
             </el-submenu>
 
             </el-menu>
-
         </el-aside>
         <el-table
     :data="tableData"
