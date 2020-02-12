@@ -78,7 +78,7 @@
   </div>
               </div>
               <div id='btn'>
-               <el-button id="button"  type="primary" plain>确定</el-button>
+               <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
                </div>
             </el-card>
       </el-container>
@@ -101,16 +101,64 @@ export default {
 
   },
   methods: {
-    exit: function () {
-      sessionStorage.clear()
-        this.$message({
+ exit: function () {
+      var that = this;
+             this.$axios.get('/logout', {
+
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
             message: '退出成功',
             type: 'success',
             duration: 2000
           })
-          this.$router.push('/')
-    }
-   
+          that.$router.push('/')
+       
+        } else {
+          that.$message({
+            message: '退出失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    } ,
+   up: function () {
+      var that = this;
+             this.$axios.get({
+ headers: {
+            'Content-Type': 'application/json',
+      },
+      url:'/project'
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
+            message: '增加成功',
+            type: 'success',
+            duration: 2000
+          })
+
+        } else {
+          that.$message({
+            message: '失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    }  
     },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);

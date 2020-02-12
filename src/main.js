@@ -4,10 +4,27 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
-import axios from 'axios'
+import Axios from 'axios'
+import VueAxios from 'vue-axios'
+import qs from 'qs'
+Vue.prototype.$qs = qs;
+const MyAxios = Axios.create({
+  transformRequest: [function (data) {
+    // 将数据转换为表单数据
+    let ret = ''
+    for (let it in data) {
+      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+    }
+    return ret
+  }],
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+})
+Vue.use(VueAxios, MyAxios)
 import 'element-ui/lib/theme-chalk/index.css'
-axios.defaults.withCredentials=true;
-axios.defaults.baseURL = 'http://39.97.112.80:2080/xjwc'
+Axios.defaults.withCredentials=true;
+Axios.defaults.baseURL = 'http://39.97.112.80:8080/jwc'
 Vue.config.productionTip = false
 import VueSessionStorage from 'vue-sessionstorage'
 Vue.use(VueSessionStorage)

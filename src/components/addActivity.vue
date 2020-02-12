@@ -56,18 +56,32 @@
               <div class="item">
               项目名称：<el-input v-model="name" placeholder="请输入内容"></el-input>
                </div><div class="item">
-               负责人：<el-input v-model="phone" placeholder="请输入内容"></el-input>
+               负责人：<el-input v-model="leader" placeholder="请输入内容"></el-input>
               </div><div class="item">
                所属单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
               </div>
               <div class="item">
                所属活动：<el-input v-model="activity" placeholder="请输入内容"></el-input>
               </div>
-              <div class="item"> 
-              上传附件：<el-button id="up" type="primary" plain>点击上传</el-button>
+              <div class="item">
+               相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
+          <template class="item">
+    <el-upload
+    
+      class="upload-demo"
+      ref="upload"
+      :action=url
+      :auto-upload="false"
+      >
+      <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
+     
+      <div slot="tip" class="el-upload__tip">只能上传<b>压缩包</b>文件</div>
+    </el-upload>
+</template>
+
               <div id='btn'>
-               <el-button id="button"  type="primary" plain>确定</el-button>
+               <el-button id="button" @click="up"  type="primary" plain>确定</el-button>
                </div>
             </el-card>
       </el-container>
@@ -80,31 +94,125 @@ export default {
   data(){
     return{
       name:"",
-      phone:"",
-      unit:""
+      leader:"",
+      unit:"",
+      info:"",
+      activity:"",
+      fileList: [],
+      url:"",
+    
     }
   },
   mounted(){
 
   },
   methods: {
-    exit: function () {
-      sessionStorage.clear()
-        this.$message({
+          submitUpload() {
+        this.$refs.upload.submit();
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+       up: function () {
+      var that = this;
+this.$axios.get('/activity?'+"name="+this.activity, {
+
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+       var activityId = response.data.data[0].activityId
+       console.log(response.data.data[0].activityId)
+        that.$axios({
+  data:{"activityId" : activityId,
+	"info" : that.info,
+	"unit" : that.unit,
+	"leader" : that.leader,
+  "score"  : 0,
+  "name" : that.name,
+  },
+    method:'post',
+    url:'/project ',
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        that.$message({
+            message: '增加成功',
+            type: 'success',
+            duration: 2000
+          })
+          console.log(response.data.data)
+          function* fun(){
+          that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
+          yield '1';
+          that.submitUpload();
+          yield '2'; 
+          }
+          var f = fun();
+          f.next();
+          f.next(); 
+          // setTimeout(function(){  that.submitUpload(); }, 300);
+        } else {
+          that.$message({
+            message: '添加失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+        } else {
+          that.$message({
+            message: '该活动名称不存在！',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+   
+    } ,
+ exit: function () {
+      var that = this;
+             this.$axios.get('/logout', {
+
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
             message: '退出成功',
             type: 'success',
             duration: 2000
           })
-          this.$router.push('/')
-    }
-   
+          that.$router.push('/')
+       
+        } else {
+          that.$message({
+            message: '退出失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    } 
     },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
   }
-
 </script>
 
 <style>
@@ -116,7 +224,7 @@ export default {
   margin:5% auto;
   width:68px;
 }
-.item{
+.item #item{
 
   text-align:center; 
 }

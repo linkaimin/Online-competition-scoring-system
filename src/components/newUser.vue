@@ -60,10 +60,12 @@
                </div><div class="item">
                账号：<el-input v-model="phone" placeholder="请输入内容"></el-input>
               </div><div class="item">
+                密码：<el-input v-model="password" placeholder="请输入内容"></el-input>
+              </div><div class="item">
                单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
               </div>
               <div id='btn'>
-               <el-button id="button"  type="primary" plain>确定</el-button>
+               <el-button id="button"  type="primary" plain @click="add">确定</el-button>
                </div>
             </el-card>
       </el-container>
@@ -78,7 +80,8 @@ export default {
       name:"",
       phone:"",
       unit:"",
-      activity:""
+      activity:"",
+      password:""
     }
   },
   mounted(){
@@ -86,20 +89,75 @@ export default {
   },
   methods: {
     exit: function () {
-      sessionStorage.clear()
-        this.$message({
+      var that = this;
+             this.$axios.get('/logout', {
+
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
             message: '退出成功',
             type: 'success',
             duration: 2000
           })
-          this.$router.push('/')
-    }
-   
+          that.$router.push('/')
+       
+        } else {
+          that.$message({
+            message: '退出失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    } ,
+     add:function(){     
+       var that = this;  
+      this.$axios({
+      data: {
+        unit:this.unit,
+        activity:this.activity,
+      userName:this.name,
+      phone:this.phone,
+      password:this.password
+      },
+      method:'post',
+    url:'/register ',
+    headers: {
+            'Content-Type': 'application/json',
+      }
+  })
+  .then(function (response) {
+    console.log(response.data.resultCode);
+      if (response.data.resultCode === 200) {
+          that.$message({
+            message: '添加成功',
+            type: 'success',
+            duration: 2000
+          })
+       
+        } else {
+          that.$message({
+            message: '添加失败，请稍后再试',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+   }
     },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
+ 
   }
 
 </script>
