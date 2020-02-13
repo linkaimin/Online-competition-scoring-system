@@ -29,6 +29,7 @@
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
                
@@ -54,21 +55,29 @@
                 <span>新增项目</span> 
               </div>
               <div class="item">
-              项目名称：<el-input v-model="name" placeholder="请输入内容"></el-input>
+              所属活动：<el-select id="select" v-model="activity" placeholder="请选择">
+    <el-option
+    
+      v-for="item in options"
+      :key="item.value"
+      :label="item.name"
+      :value="item.name"
+     >
+    </el-option>
+  </el-select>
                </div><div class="item">
                负责人：<el-input v-model="leader" placeholder="请输入内容"></el-input>
               </div><div class="item">
                所属单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
               </div>
               <div class="item">
-               所属活动：<el-input v-model="activity" placeholder="请输入内容"></el-input>
+               项目名称：<el-input v-model="name" placeholder="请输入内容"></el-input>
               </div>
               <div class="item">
                相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
           <template class="item">
     <el-upload
-    
       class="upload-demo"
       ref="upload"
       :action=url
@@ -100,13 +109,26 @@ export default {
       activity:"",
       fileList: [],
       url:"",
-    
+      options:[]
     }
   },
   mounted(){
-
+    this.select()
   },
   methods: {
+      select(){
+        var that = this;
+        this.$axios.get('/activity', {
+     })
+     .then(function (response){
+       console.log(response);
+        console.log(that.options)
+      if (response.data.resultCode === 200) {
+         that.options = response.data.data;
+       console.log(that.options)
+      }
+     })
+      },
           submitUpload() {
         this.$refs.upload.submit();
       },
@@ -146,15 +168,25 @@ this.$axios.get('/activity?'+"name="+this.activity, {
             duration: 2000
           })
           console.log(response.data.data)
-          function* fun(){
-          that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
-          yield '1';
-          that.submitUpload();
-          yield '2'; 
-          }
-          var f = fun();
-          f.next();
-          f.next(); 
+        async function test1() {
+            await test2();
+            that.submitUpload();     
+      
+        }
+        async function test2() {
+             that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
+        }
+        test1();
+          // function* fun(){
+          // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
+          // yield '1';
+          // that.submitUpload();
+          // yield '2'; 
+          // }
+          // var f = fun();
+          // f.next();
+          // f.next(); 
+
           // setTimeout(function(){  that.submitUpload(); }, 300);
         } else {
           that.$message({
@@ -216,6 +248,9 @@ this.$axios.get('/activity?'+"name="+this.activity, {
 </script>
 
 <style>
+#select{
+  width: 308px;
+}
 #up{
    width: 70%;
   margin: 1%;
@@ -230,7 +265,6 @@ this.$axios.get('/activity?'+"name="+this.activity, {
 }
 .el-input{
   width: 70%;
-  margin: 1%;
 }
   #card{
     margin:3% auto;

@@ -29,9 +29,9 @@
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
-               
                
 
               </el-menu-item-group>
@@ -53,12 +53,14 @@
                 <span>新增活动</span> 
               </div>
               <div class="item">
-              活动名称：<el-input class="time" v-model="name" placeholder="请输入内容"></el-input>
+              活动名称：<el-input class="activity" v-model="name" placeholder="请输入内容"></el-input>
                </div><div class="item" >
               
-               所属单位：<el-input class="time" v-model="unit" placeholder="请输入内容"></el-input>
+               所属单位：<el-input class="unit" v-model="unit" placeholder="请输入内容"></el-input>
               </div><div class="item" >
-              
+               <div class="item">
+              相关信息：<el-input class="info" v-model="info" placeholder="请输入内容"></el-input>
+               </div>
              <div class="block">
                  开始时间：
     <el-date-picker 
@@ -91,7 +93,7 @@ export default {
   data(){
     return{
       name:"",
-      phone:"",
+      info:"",
       unit:"",
       value1: '',
       value2: '',
@@ -129,13 +131,18 @@ export default {
     console.log(error);
   });
     } ,
-   up: function () {
+   add: function () {
       var that = this;
-             this.$axios.get({
- headers: {
-            'Content-Type': 'application/json',
+             this.$axios({
+      data:{
+        "name" : that.name,
+        "info" : that.info,
+        "startTime" : that.value1,
+        "endTime" : that.value2,
+        "unit" : that.unit
       },
-      url:'/project'
+      method:"post",
+      url:'/activity'
   })
   .then(function (response) {
     console.log(response);
@@ -182,7 +189,6 @@ export default {
 }
 .el-input{
   width: 70%;
-  margin: 1%;
 }
   #card{
     margin:3% auto;

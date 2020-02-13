@@ -29,6 +29,7 @@
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
                
@@ -48,24 +49,29 @@
 
             </el-menu>
 
-        </el-aside>
-        <el-table
-    :data="tableData"
+        </el-aside>            
+        <div  id="table">
+          <div id="box">   
+  <el-input id="find" v-model="find" placeholder="请输入项目所属的活动名称"></el-input>  
+<el-button id="findBtn"  type="primary" plain @click="select">确定</el-button>  
+   </div>
+        <el-table     
+    :data=tableData
     style="width: 100%">
     <el-table-column
-      label="活动名称"
+      label="活动编号"
       width="180">
       <template slot-scope="scope">
         <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+        <span style="margin-left: 10px">{{ scope.row.activityId }}</span>
       </template>
     </el-table-column>
     <el-table-column
       label="项目名称"
-      width="180">
+      width="250">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.phone }}</el-tag>
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
           </div> 
       </template>
     </el-table-column>
@@ -74,7 +80,7 @@
       width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+            <el-tag size="medium">{{ scope.row.leader }}</el-tag>
           </div>
       </template>
     </el-table-column>
@@ -91,14 +97,15 @@
       <template slot-scope="scope">
         <el-button
           size="mini"
-          @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          @click="handleDelete(scope.$index,scope.row)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
+  </div>
       </el-container>
     </el-container>
   </div>
@@ -106,40 +113,79 @@
 
 <script>
 export default {
+
   data(){
     return{
-       tableData: [{
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '大创',
-          name: '王小虎',
-          phone:'12345',
-          unit: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1516 弄'
-        }]
+       tableData:[],
+       find:"",
+       activityId:""
     }
   },
-  mounted(){
-
-  },
   methods: {
+
+      select(){
+     var that = this;
+ this.$axios.get('/activity?'+"name="+this.find, {
+  
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+            
+            that.activityId = response.data.data[0].activityId
+       console.log(response.data.data[0].activityId)
+        that.$axios({
+       url:"/pro",
+       method:"post",
+        data:{
+        "activityId" : that.activityId
+      }
+  })
+  .then(function (response) {
+    console.log(response.data);
+     console.log(response.data.data);
+    that.tableData = response.data.data[0]
+      })
+      }
+     })
+   },
        handleEdit(index, row) {
-        console.log(index, row);
+         console.log(row)
+         this.$router.push({
+          path: '/update',
+          query: { ruleForm:row }
+         })
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        var that = this
+        this.$axios({
+          data:{
+        "projectId" : row.projectId,
+        "activityId" : row.activityId
+      },
+          method:"delete",
+          url:"/project",
+        })
+        .then(function (response){
+          if (response.data.resultCode === 200) {
+        that.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+        that.$axios({
+       url:"/pro",
+       method:"post",
+        data:{
+        "activityId" : that.activityId
+      }
+  })
+  .then(function (response) {
+    console.log(response.data.data);
+    that.tableData = response.data.data
+      })
+          }
+        })
       },
  exit: function () {
       var that = this;
@@ -174,12 +220,31 @@ export default {
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
+
   }
 
 </script>
 
 <style>
+*{
+  margin: 0; padding: 0;
+}
+#findBtn{
+ height: 50%;
+ margin-right:40%; 
+ margin-top:1rem; 
+}
+#box{
+  display: flex;
+}
+#find{
+  display:inline;
+  width: 70%;
+  margin: 1rem 0 0 5rem;
+}
+#table{
+ width: 100%;
+}
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
@@ -189,9 +254,7 @@ a{
   height: 100%;
   position: absolute;
 }
-*{
-  margin: 0; padding: 0;
-}
+
 .test{
   width: 500px;
   height: 500px;

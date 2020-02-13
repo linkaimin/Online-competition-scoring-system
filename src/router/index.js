@@ -9,6 +9,9 @@ import addActivity from '@/components/addActivity'
 import newActivity from '@/components/newActivity'
 import show from '@/components/show'
 import formulate from '@/components/formulate'
+import updateProject from '@/components/updateProject'
+import updateActivity from '@/components/updateActivity'
+import manage from '@/components/manage'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.prototype.$axios = axios;
@@ -21,6 +24,21 @@ export default new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld
+    },
+    {
+      path: '/manage',
+      name: 'manage',
+      component: manage
+    },
+    {
+      path: '/updateActivity',
+      name: 'updateActivity',
+      component: updateActivity
+    },
+    {
+      path: '/update',
+      name: 'update',
+      component: updateProject
     },
     {
       path: '/index',

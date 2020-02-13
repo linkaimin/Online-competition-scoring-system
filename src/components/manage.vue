@@ -12,7 +12,7 @@
       <el-container>
         <el-aside width="220px" class="aside">
      <div class="mean-top"><i class="el-icon-menu"></i> 功能导航</div>
-                   <el-menu  router :default-active="$route.path"
+          <el-menu  router :default-active="$route.path"
                     background-color="#dbe9f1"
                     active-text-color="#6ec673" id="menu"
                     >
@@ -32,6 +32,8 @@
                 <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
+               
+               
 
               </el-menu-item-group>
             </el-submenu>
@@ -46,60 +48,71 @@
             </el-submenu>
 
             </el-menu>
-        </el-aside>
-    <template>
-  <el-table
-    :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+
+        </el-aside>            
+        <div  id="table">
+        <el-table     
+    :data="tableData"
     style="width: 100%">
+    
     <el-table-column
       label="活动名称"
-      prop="activity">
+      width="200">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+          </div> 
+      </template>
     </el-table-column>
     <el-table-column
-      label="排名"
-      prop="rank">
-    </el-table-column>
-     <el-table-column
-      label="项目名称"
-      prop="project">
-    </el-table-column>
-    <el-table-column
-      label="负责人"
-      prop="leader">
+      label="相关信息"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.info }}</el-tag>
+          </div>
+      </template>
     </el-table-column>
      <el-table-column
       label="所属单位"
-      prop="unit">
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.unit }}</el-tag>
+          </div>
+      </template>
     </el-table-column>
      <el-table-column
-      label="综合得分"
-      prop="score">
-    </el-table-column>
-    <el-table-column
-      align="right">
-      <template slot="header">
-       <el-select id="select" v-model="val" placeholder="请选择所属活动">
-    <el-option
-      v-for="item in options"
-      :key="item.val"
-      :label="item.label"
-      :value="item.val">
-    </el-option>
-  </el-select>
+      label="开始时间"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.startTime }}</el-tag>
+          </div>
       </template>
+    </el-table-column>
+     <el-table-column
+      label="截止时间"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.endTime }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
       <template slot-scope="scope">
         <el-button
           size="mini"
-          @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          @click="handleDelete(scope.$index,scope.row.activityId)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
-</template>
-
+  </div>
       </el-container>
     </el-container>
   </div>
@@ -107,46 +120,62 @@
 
 <script>
 export default {
+
   data(){
     return{
-      val:'',
-       tableData: [{
-          activity:'大创',
-          rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-           rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-            rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-             rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }]
+       tableData: [],
+       find:""
     }
   },
   mounted(){
-
+  this.select()
   },
   methods: {
+
+      select(){
+     var that = this;
+    this.$axios.get('/activity', {
+
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.tableData = response.data.data
+       console.log(response.data.data)
+      }
+     })
+   },
        handleEdit(index, row) {
-        console.log(index, row);
+         console.log(row)
+         this.$router.push({
+          path: '/updateActivity',
+          query: { ruleForm:row }
+         })
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        var that = this
+        this.$axios({
+          method:"DELETE",
+          url:"/activity/"+row,
+        })
+        .then(function (response){
+          if (response.data.resultCode === 200) {
+        that.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+         that.$axios.get('/activity', {
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.tableData = response.data.data
+       console.log(response.data.data)
+      }
+     })
+          }
+        })
       },
  exit: function () {
       var that = this;
@@ -176,17 +205,36 @@ export default {
     console.log(error);
   });
     } 
+   
     },
-
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
+
   }
 
 </script>
 
 <style>
+*{
+  margin: 0; padding: 0;
+}
+#findBtn{
+ height: 50%;
+ margin-right:40%; 
+ margin-top:1rem; 
+}
+#box{
+  display: flex;
+}
+#find{
+  display:inline;
+  width: 70%;
+  margin: 1rem 0 0 5rem;
+}
+#table{
+ width: 100%;
+}
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
@@ -196,9 +244,7 @@ a{
   height: 100%;
   position: absolute;
 }
-*{
-  margin: 0; padding: 0;
-}
+
 .test{
   width: 500px;
   height: 500px;

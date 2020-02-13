@@ -12,7 +12,7 @@
       <el-container>
         <el-aside width="220px" class="aside">
      <div class="mean-top"><i class="el-icon-menu"></i> 功能导航</div>
-                   <el-menu  router :default-active="$route.path"
+           <el-menu  router :default-active="$route.path"
                     background-color="#dbe9f1"
                     active-text-color="#6ec673" id="menu"
                     >
@@ -28,10 +28,11 @@
             <el-submenu index="8">
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
-               <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
                 <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
+               
 
               </el-menu-item-group>
             </el-submenu>
@@ -46,60 +47,43 @@
             </el-submenu>
 
             </el-menu>
+
         </el-aside>
-    <template>
-  <el-table
-    :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-    style="width: 100%">
-    <el-table-column
-      label="活动名称"
-      prop="activity">
-    </el-table-column>
-    <el-table-column
-      label="排名"
-      prop="rank">
-    </el-table-column>
-     <el-table-column
-      label="项目名称"
-      prop="project">
-    </el-table-column>
-    <el-table-column
-      label="负责人"
-      prop="leader">
-    </el-table-column>
-     <el-table-column
-      label="所属单位"
-      prop="unit">
-    </el-table-column>
-     <el-table-column
-      label="综合得分"
-      prop="score">
-    </el-table-column>
-    <el-table-column
-      align="right">
-      <template slot="header">
-       <el-select id="select" v-model="val" placeholder="请选择所属活动">
-    <el-option
-      v-for="item in options"
-      :key="item.val"
-      :label="item.label"
-      :value="item.val">
-    </el-option>
-  </el-select>
-      </template>
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+                   <el-card id="card" class="box-card">
+              <div slot="header" class="clearfix">
+                <span>修改项目</span> 
+              </div>
+              <div class="item">
+              项目名称：<el-input v-model="name" placeholder="请输入内容"></el-input>
+               </div><div class="item">
+               负责人：<el-input v-model="leader" placeholder="请输入内容"></el-input>
+              </div><div class="item">
+               所属单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
+              </div>
+              <div class="item">
+               活动编号：<el-input v-model="activityId" placeholder="请输入内容"></el-input>
+              </div>
+              <div class="item">
+               相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
+              </div>
+          <template class="item">
+    <el-upload
+    
+      class="upload-demo"
+      ref="upload"
+      :action=url
+      :auto-upload="false"
+      >
+      <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
+     
+      <div slot="tip" class="el-upload__tip">只能上传<b>压缩包</b>文件</div>
+    </el-upload>
 </template>
 
+              <div id='btn'>
+               <el-button id="button" @click="up"  type="primary" plain>确定</el-button>
+               </div>
+            </el-card>
       </el-container>
     </el-container>
   </div>
@@ -109,45 +93,87 @@
 export default {
   data(){
     return{
-      val:'',
-       tableData: [{
-          activity:'大创',
-          rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-           rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-            rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-             rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }]
+      name:"",
+      leader:"",
+      unit:"",
+      info:"",
+      activityId:"",
+      fileList: [],
+      url:"",
+      projectId:"",
     }
   },
   mounted(){
-
+     this.text()
   },
   methods: {
-       handleEdit(index, row) {
-        console.log(index, row);
+      text(){
+     var data = this.$route.query.ruleForm;
+      this.name = data.name;
+      this.leader = data.leader;
+      this.unit = data.unit;
+      this.info = data.info;
+      this.activityId = data.activityId;
+      this.projectId = data.projectId
+      this.url ="http://39.97.112.80:8080/jwc/document/upload/"+this.projectId;
       },
-      handleDelete(index, row) {
-        console.log(index, row);
+        submitUpload() {
+        this.$refs.upload.submit();
       },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+       up: function () {
+      var that = this;
+        that.$axios({
+  data:{"projectId" : that.projectId,
+	"info" : that.info,
+	"unit" : that.unit,
+	"leader" : that.leader,
+    "name" : that.name,
+    "activityId" : that.activityId,
+  },
+    method:'put',
+    url:'/project ',
+  })
+  .then(function (response) {
+    
+    console.log(response);
+      if (response.data.resultCode === 200) {
+          that.submitUpload();    
+        that.$message({
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+             
+          // function* fun(){
+          // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
+          // yield '1';
+          // that.submitUpload();
+          // yield '2'; 
+          // }
+          // var f = fun();
+          // f.next();
+          // f.next(); 
+
+          // setTimeout(function(){  that.submitUpload(); }, 300);
+        } else {
+          that.$message({
+            message: '添加失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+    } ,
  exit: function () {
       var that = this;
              this.$axios.get('/logout', {
@@ -177,16 +203,52 @@ export default {
   });
     } 
     },
-
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
   }
-
 </script>
 
 <style>
+#up{
+   width: 70%;
+  margin: 1%;
+}
+#btn{
+  margin:5% auto;
+  width:68px;
+}
+.item #item{
+
+  text-align:center; 
+}
+.el-input{
+  width: 70%;
+  margin: 1%;
+}
+  #card{
+    margin:3% auto;
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);

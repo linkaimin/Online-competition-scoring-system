@@ -12,7 +12,7 @@
       <el-container>
         <el-aside width="220px" class="aside">
      <div class="mean-top"><i class="el-icon-menu"></i> 功能导航</div>
-                   <el-menu  router :default-active="$route.path"
+          <el-menu  router :default-active="$route.path"
                     background-color="#dbe9f1"
                     active-text-color="#6ec673" id="menu"
                     >
@@ -28,10 +28,11 @@
             <el-submenu index="8">
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
-               <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+                <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
                 <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
+               
 
               </el-menu-item-group>
             </el-submenu>
@@ -47,59 +48,41 @@
 
             </el-menu>
         </el-aside>
-    <template>
-  <el-table
-    :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-    style="width: 100%">
-    <el-table-column
-      label="活动名称"
-      prop="activity">
-    </el-table-column>
-    <el-table-column
-      label="排名"
-      prop="rank">
-    </el-table-column>
-     <el-table-column
-      label="项目名称"
-      prop="project">
-    </el-table-column>
-    <el-table-column
-      label="负责人"
-      prop="leader">
-    </el-table-column>
-     <el-table-column
-      label="所属单位"
-      prop="unit">
-    </el-table-column>
-     <el-table-column
-      label="综合得分"
-      prop="score">
-    </el-table-column>
-    <el-table-column
-      align="right">
-      <template slot="header">
-       <el-select id="select" v-model="val" placeholder="请选择所属活动">
-    <el-option
-      v-for="item in options"
-      :key="item.val"
-      :label="item.label"
-      :value="item.val">
-    </el-option>
-  </el-select>
-      </template>
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-</template>
-
+                   <el-card id="card" class="box-card">
+              <div slot="header" class="clearfix">
+                <span>修改活动</span> 
+              </div>
+              <div class="item">
+              活动名称：<el-input class="activity" v-model="name" placeholder="请输入内容"></el-input>
+               </div><div class="item" >
+              
+               所属单位：<el-input class="unit" v-model="unit" placeholder="请输入内容"></el-input>
+              </div><div class="item" >
+               <div class="item">
+              相关信息：<el-input class="info" v-model="info" placeholder="请输入内容"></el-input>
+               </div>
+             <div class="block">
+                 开始时间：
+    <el-date-picker 
+      v-model="value1"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
+  </div>
+            </div><div class="item" >
+             <div class="block">
+                 结束时间：
+    <el-date-picker 
+      v-model="value2"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
+  </div>
+              </div>
+              <div id='btn'>
+               <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
+               </div>
+            </el-card>
       </el-container>
     </el-container>
   </div>
@@ -109,44 +92,26 @@
 export default {
   data(){
     return{
-      val:'',
-       tableData: [{
-          activity:'大创',
-          rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-           rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-            rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }, {activity:'大创',
-             rank: '1',
-          project:'12345',
-          leader: '王小虎',
-          unit: '100',
-          score:'100'
-        }]
+      name:"",
+      info:"",
+      unit:"",
+      value1: '',
+      value2: '',
+      activityId:""
     }
   },
   mounted(){
-
+  this.text()
   },
   methods: {
-       handleEdit(index, row) {
-        console.log(index, row);
-      },
-      handleDelete(index, row) {
-        console.log(index, row);
+      text(){
+        var data = this.$route.query.ruleForm;
+        this.name = data.name;
+        this.unit = data.unit;
+        this.info = data.info;
+        this.value1 = data.startTime;
+        this.value2 = data.endTime;
+        this.activityId = data.activityId;
       },
  exit: function () {
       var that = this;
@@ -175,9 +140,44 @@ export default {
   .catch(function (error) {
     console.log(error);
   });
-    } 
-    },
+    } ,
+   add: function () {
+      var that = this;
+             this.$axios({
+      data:{
+        "activityId" : that.activityId,
+        "name" : that.name,
+        "info" : that.info,
+        "startTime" : that.value1,
+        "endTime" : that.value2,
+        "unit" : that.unit
+      },
+      method:"put",
+      url:'/activity'
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
 
+        } else {
+          that.$message({
+            message: '失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    }  
+    },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
@@ -187,6 +187,43 @@ export default {
 </script>
 
 <style>
+.class{
+  width:80%;
+}
+#btn{
+  margin:5% auto;
+  width:68px;
+}
+.item{
+
+  text-align:center; 
+}
+.el-input{
+  width: 70%;
+}
+  #card{
+    margin:3% auto;
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
