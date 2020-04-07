@@ -52,12 +52,14 @@
         
            <el-main>
                
- 活动名称：<el-select id="select" v-model="val" placeholder="请选择">
+ 活动名称：<el-select id="sel" v-model="activity" placeholder="请选择">
     <el-option
+    
       v-for="item in options"
-      :key="item.val"
-      :label="item.label"
-      :value="item.val">
+      :key="item.value"
+      :label="item.name"
+      :value="item.name"
+     >
     </el-option>
   </el-select>
     <el-col :span="24" class="warp-main" v-loading="">
@@ -86,33 +88,34 @@ export default {
   data(){
     return{ 
         val:'',
-         options: [{
-          val: '选项1',
-          label: '黄金糕'
-        }, {
-          val: '选项2',
-          label: '双皮奶'
-        }, {
-          val: '选项3',
-          label: '蚵仔煎'
-        }, {
-          val: '选项4',
-          label: '龙须面'
-        }, {
-          val: '选项5',
-          label: '北京烤鸭'
-        }],
+         options: [],
        FormArr: [
         {
           index: 0,
           value: '',
           part:''
         }
-      ]
+      ],
+        activity:"",
     }
   },
-
+  mounted(){
+    this.select()
+  },
   methods: {
+       select(){
+        var that = this;
+        this.$axios.get('/activity', {
+     })
+     .then(function (response){
+       console.log(response);
+        console.log(that.options)
+      if (response.data.resultCode === 200) {
+         that.options = response.data.data;
+       console.log(that.options)
+      }
+     })
+      },
         make:function() {
         },
 	   AddForm :function() {
@@ -166,7 +169,7 @@ export default {
 </script>
 
 <style>
-#select{
+#sel{
     margin: 10%
 }
 a{

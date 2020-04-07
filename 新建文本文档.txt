@@ -1,0 +1,4 @@
+字符串转义(|后的数为前面字符串的重复数)
+[ab]|3 = ababab
+b[aa]2 = baaaa
+[abb[ab]|3]|2 = abbababababbababab

@@ -12,6 +12,7 @@ import formulate from '@/components/formulate'
 import updateProject from '@/components/updateProject'
 import updateActivity from '@/components/updateActivity'
 import manage from '@/components/manage'
+import updateUser from '@/components/updateUser'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.prototype.$axios = axios;
@@ -34,6 +35,11 @@ export default new Router({
       path: '/updateActivity',
       name: 'updateActivity',
       component: updateActivity
+    },
+    {
+      path: '/updateUser',
+      name: 'updateUser',
+      component: updateUser
     },
     {
       path: '/update',

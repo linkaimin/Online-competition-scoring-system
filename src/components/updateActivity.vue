@@ -56,10 +56,10 @@
               活动名称：<el-input class="activity" v-model="name" placeholder="请输入内容"></el-input>
                </div><div class="item" >
               
-               所属单位：<el-input class="unit" v-model="unit" placeholder="请输入内容"></el-input>
+               所属单位：<el-input class="activity" v-model="unit" placeholder="请输入内容"></el-input>
               </div><div class="item" >
                <div class="item">
-              相关信息：<el-input class="info" v-model="info" placeholder="请输入内容"></el-input>
+              相关信息：<el-input class="activity" v-model="info" placeholder="请输入内容"></el-input>
                </div>
              <div class="block">
                  开始时间：
@@ -187,7 +187,7 @@ export default {
 </script>
 
 <style>
-.class{
+.activity{
   width:80%;
 }
 #btn{
@@ -198,7 +198,7 @@ export default {
 
   text-align:center; 
 }
-.el-input{
+.activity .unit .info{
   width: 70%;
 }
   #card{

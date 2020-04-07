@@ -28,7 +28,7 @@
             <el-submenu index="8">
               <template slot="title"><i class="el-icon-location"></i>项目管理</template>
               <el-menu-item-group>
-                <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
+               <el-menu-item index="/newActivity"> <i class="el-icon-tickets"></i>新增活动</el-menu-item>
                 <el-menu-item index="/manage"> <i class="el-icon-tickets"></i>活动管理</el-menu-item>
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
@@ -48,16 +48,20 @@
             </el-submenu>
 
             </el-menu>
-        </el-aside>
-        <el-table
+
+        </el-aside>            
+        <div  id="table">
+        <el-table     
     :data="tableData"
     style="width: 100%">
+    
     <el-table-column
-      label="负责活动"
-      width="180">
+      label="用户名称"
+      width="200">
       <template slot-scope="scope">
-        <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.userName }}</el-tag>
+          </div> 
       </template>
     </el-table-column>
     <el-table-column
@@ -66,24 +70,33 @@
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.phone }}</el-tag>
-          </div> 
-      </template>
-    </el-table-column>
-    <el-table-column
-      label="姓名"
-      width="180">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
           </div>
       </template>
     </el-table-column>
      <el-table-column
-      label="单位"
-      width="230">
+      label="所属单位"
+      width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.unit }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
+     <el-table-column
+      label="负责活动"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.activity }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
+<el-table-column
+      label="编号"
+      width="180">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.userId }}</el-tag>
           </div>
       </template>
     </el-table-column>
@@ -91,14 +104,15 @@
       <template slot-scope="scope">
         <el-button
           size="mini"
-          @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          @click="handleDelete(scope.$index,scope.row.activityId)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
+  </div>
       </el-container>
     </el-container>
   </div>
@@ -106,40 +120,66 @@
 
 <script>
 export default {
+
   data(){
     return{
-       tableData: [{
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '大创',
-          name: '王小虎',
-          phone:'12345',
-          unit: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '大创',
-          phone:'12345',
-          name: '王小虎',
-          unit: '上海市普陀区金沙江路 1516 弄'
-        }]
+       tableData: [],
+       find:""
     }
   },
   mounted(){
-
+  this.select()
   },
   methods: {
+
+      select(){
+     var that = this;
+     this.$axios({
+      data:{
+	    "role" : "1"
+      },
+      method:"post",
+      url:'/user'
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.tableData = response.data.data
+       console.log(response.data.data)
+      }
+     })
+   },
        handleEdit(index, row) {
-        console.log(index, row);
+         console.log(row)
+         this.$router.push({
+          path: '/updateUser',
+          query: { ruleForm:row }
+         })
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        var that = this
+        this.$axios({
+          method:"DELETE",
+          url:"/activity/"+row,
+        })
+        .then(function (response){
+          if (response.data.resultCode === 200) {
+        that.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+         that.$axios.get('/activity', {
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.tableData = response.data.data
+       console.log(response.data.data)
+      }
+     })
+          }
+        })
       },
  exit: function () {
       var that = this;
@@ -174,12 +214,31 @@ export default {
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-   
+
   }
 
 </script>
 
 <style>
+*{
+  margin: 0; padding: 0;
+}
+#findBtn{
+ height: 50%;
+ margin-right:40%; 
+ margin-top:1rem; 
+}
+#box{
+  display: flex;
+}
+#find{
+  display:inline;
+  width: 70%;
+  margin: 1rem 0 0 5rem;
+}
+#table{
+ width: 100%;
+}
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
@@ -189,9 +248,7 @@ a{
   height: 100%;
   position: absolute;
 }
-*{
-  margin: 0; padding: 0;
-}
+
 .test{
   width: 500px;
   height: 500px;

@@ -247,7 +247,10 @@ this.$axios.get('/activity?'+"name="+this.activity, {
   }
 </script>
 
-<style>
+<style >
+.item {
+  text-align:center; 
+}
 #select{
   width: 308px;
 }
@@ -259,10 +262,7 @@ this.$axios.get('/activity?'+"name="+this.activity, {
   margin:5% auto;
   width:68px;
 }
-.item #item{
 
-  text-align:center; 
-}
 .el-input{
   width: 70%;
 }

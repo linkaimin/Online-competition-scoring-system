@@ -221,11 +221,10 @@ export default {
 .item #item{
 
   text-align:center; 
-}
-.el-input{
   width: 70%;
   margin: 1%;
 }
+
   #card{
     margin:3% auto;
   }

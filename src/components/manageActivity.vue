@@ -144,7 +144,7 @@ export default {
   .then(function (response) {
     console.log(response.data);
      console.log(response.data.data);
-    that.tableData = response.data.data[0]
+    that.tableData = response.data.data;
       })
       }
      })

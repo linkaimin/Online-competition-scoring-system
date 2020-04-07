@@ -33,7 +33,6 @@
                 <el-menu-item index="/addActivity"> <i class="el-icon-tickets"></i>活动项目添加</el-menu-item>
                 <el-menu-item index="/manageActivity"> <i class="el-icon-tickets"></i>活动项目管理</el-menu-item>
                
-               
 
               </el-menu-item-group>
             </el-submenu>
@@ -48,75 +47,31 @@
             </el-submenu>
 
             </el-menu>
+        </el-aside>
+                   <el-card id="card" class="box-card">
+              <div slot="header" class="clearfix">
+                <span>修改用户信息</span> 
+              </div>
+              <div class="item">
+              用户姓名：<el-input class="activity" v-model="userName" placeholder="请输入内容"></el-input>
+               </div><div class="item" >
+              
+               所属单位：<el-input class="activity" v-model="unit" placeholder="请输入内容"></el-input>
+              </div><div class="item" >
+               <div class="item">
+              用户账号：<el-input class="activity" v-model="phone" placeholder="请输入内容"></el-input>
+               </div>
 
-        </el-aside>            
-        <div  id="table">
-          
-          <div id="box">
-      <el-select id="sell" v-model="activity" placeholder="活动名称">
-    <el-option
-    
-      v-for="item in options"
-      :key="item.value"
-      :label="item.name"
-      :value="item.name"
-     >
-    </el-option>
-  </el-select>   
-  <el-input id="find" v-model="find" placeholder="项目名称"></el-input>  
-<el-button id="findBtn"  type="primary" plain @click="select">确定</el-button>  
-   </div>
-        <el-table     
-    :data=tableData
-    style="width: 100%">
-    <el-table-column
-      label="活动编号"
-      width="180">
-      <template slot-scope="scope">
-        <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.activityId }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-      label="项目名称"
-      width="250">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
-          </div> 
-      </template>
-    </el-table-column>
-    <el-table-column
-      label="负责人"
-      width="180">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.leader }}</el-tag>
-          </div>
-      </template>
-    </el-table-column>
-     <el-table-column
-      label="所属单位"
-      width="230">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.unit }}</el-tag>
-          </div>
-      </template>
-    </el-table-column>
-    <el-table-column label="操作">
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index,scope.row)">删除</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  </div>
+            </div><div class="item" >
+             
+                负责活动：<el-input class="activity" v-model="activity" placeholder="请输入内容"></el-input>
+              
+              </div>
+             
+              <div id='btn'>
+               <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
+               </div>
+            </el-card>
       </el-container>
     </el-container>
   </div>
@@ -124,71 +79,29 @@
 
 <script>
 export default {
-
   data(){
     return{
-       tableData:[],
-       find:"",
-       activityId:"",
-       activity:"",
-       options:[]
+      userName:"",
+      activity:"",
+      unit:"",
+      value1: '',
+      value2: '',
+      phone:"",
+      userId:""
     }
   },
-    mounted(){
-    this.select()
+  mounted(){
+  this.text()
   },
   methods: {
-
-        select(){
-        var that = this;
-        this.$axios.get('/activity', {
-     })
-     .then(function (response){
-       console.log(response);
-        console.log(that.options)
-      if (response.data.resultCode === 200) {
-         that.options = response.data.data;
-       console.log(that.options)
-      }
-     })
-      },
-       handleEdit(index, row) {
-         console.log(row)
-         this.$router.push({
-          path: '/update',
-          query: { ruleForm:row }
-         })
-      },
-      handleDelete(index, row) {
-        var that = this
-        this.$axios({
-          data:{
-        "projectId" : row.projectId,
-        "activityId" : row.activityId
-      },
-          method:"delete",
-          url:"/project",
-        })
-        .then(function (response){
-          if (response.data.resultCode === 200) {
-        that.$message({
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
-          })
-        that.$axios({
-       url:"/pro",
-       method:"post",
-        data:{
-        "activityId" : that.activityId
-      }
-  })
-  .then(function (response) {
-    console.log(response.data.data);
-    that.tableData = response.data.data
-      })
-          }
-        })
+      text(){
+        var data = this.$route.query.ruleForm;
+        this.userName = data.userName;
+        this.unit = data.unit;
+        this.phone = data.phone;
+        this.activity = data.activity;
+        this.userId = data.userId;
+        console.log(data.userId)
       },
  exit: function () {
       var that = this;
@@ -217,41 +130,89 @@ export default {
   .catch(function (error) {
     console.log(error);
   });
-    } 
-   
+    } ,
+   add: function () {
+      var that = this;
+             this.$axios({
+      data:{
+         'userId' : that.userId,
+        'userName' : that.userName,
+        'unit' : that.unit,
+        'phone' : that.phone,
+       'activity' : that.activity,
+      },
+      method:"put",
+      url:'/updateInfo'
+  })
+  .then(function (response) {
+    console.log(response);
+      if (response.data.resultCode === 200) {
+        sessionStorage.clear()
+        that.$message({
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+
+        } else {
+          that.$message({
+            message: '失败，可能是网络故障',
+            type: 'error',
+            duration: 2000
+          })
+        }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+    }  
     },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
-
+   
   }
 
 </script>
 
 <style>
-*{
-  margin: 0; padding: 0;
+.activity{
+  width:80%;
 }
-#sell{
-   margin: 1rem  0 1rem 1rem;
-   width: 250px;
+#btn{
+  margin:5% auto;
+  width:68px;
 }
-#findBtn{
- height: 50%;
- margin-right:40%; 
- margin-top:1rem; 
+.item{
+
+  text-align:center; 
 }
-#box{
-  display: flex;
-}
-#find{
-  display:inline;
+.activity .unit .info{
   width: 70%;
-  margin: 1rem 0 0 5rem;
 }
-#table{
- width: 100%;
-}
+  #card{
+    margin:3% auto;
+  }
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
 a{
   text-decoration:none; 
   color:rgb(21, 46, 112);
@@ -261,7 +222,9 @@ a{
   height: 100%;
   position: absolute;
 }
-
+*{
+  margin: 0; padding: 0;
+}
 .test{
   width: 500px;
   height: 500px;
