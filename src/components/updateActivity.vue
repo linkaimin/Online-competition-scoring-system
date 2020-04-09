@@ -102,8 +102,12 @@ export default {
   },
   mounted(){
   this.text()
+  this.list()
   },
   methods: {
+     list(){
+
+     },
       text(){
         var data = this.$route.query.ruleForm;
         this.name = data.name;

@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
               
               </el-menu-item-group>
             </el-submenu>
@@ -59,62 +59,52 @@
       v-for="item in options"
       :key="item.value"
       :label="item.name"
-      :value="item.name"
+      :value="item.activityId"
      >
     </el-option>
   </el-select>   
-  <el-input id="find" v-model="find" placeholder="项目名称"></el-input>  
-<el-button id="findBtn"  type="primary" plain @click="select">确定</el-button>  
+  <el-input id="find" v-model="project" placeholder="项目名称"></el-input>  
+<el-button id="findBtn"  type="primary" plain @click="show">确定</el-button>  
    </div>
         <el-table     
     :data=tableData
     style="width: 100%">
     <el-table-column
-      label="活动编号"
-      width="180">
-      <template slot-scope="scope">
-        <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.activityId }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
       label="项目名称"
       width="250">
       <template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.project }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="评分用户名"
+      width="250">
+      <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+            <el-tag size="medium">{{ scope.row.userName }}</el-tag>
           </div> 
       </template>
     </el-table-column>
     <el-table-column
-      label="负责人"
-      width="180">
+      label="评分用户账号"
+      width="250">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.leader }}</el-tag>
+            <el-tag size="medium">{{ scope.row.phone }}</el-tag>
           </div>
       </template>
     </el-table-column>
      <el-table-column
-      label="所属单位"
-      width="230">
+      label="分数"
+      width="400">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.unit }}</el-tag>
+            <el-tag size="medium">{{ scope.row.score }}</el-tag>
           </div>
       </template>
     </el-table-column>
-    <el-table-column label="操作">
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index,scope.row)">删除</el-button>
-      </template>
-    </el-table-column>
+
   </el-table>
   </div>
       </el-container>
@@ -131,14 +121,28 @@ export default {
        find:"",
        activityId:"",
        activity:"",
-       options:[]
+       options:[],
+       project:'',
     }
   },
     mounted(){
     this.select()
   },
   methods: {
-
+        show(){
+          console.log(this.activity)
+          var that = this;
+           that.$axios.get(`/project/getId/${that.activity}/${that.project}`, {   
+     }).then(function (response){
+       that.$axios({
+         url:'/scoreList',
+         method:'post',
+         data:{"projectId" :response.data.data}
+     })       
+     }).then(function (response){
+       that.tableData = response.data.data;
+     })
+        },
         select(){
         var that = this;
         this.$axios.get('/activity', {
@@ -192,7 +196,7 @@ export default {
       },
  exit: function () {
       var that = this;
-             this.$axios.get('/logout', {
+      this.$axios.get('/logout', {
 
   })
   .then(function (response) {
@@ -247,7 +251,7 @@ export default {
 #find{
   display:inline;
   width: 70%;
-  margin: 1rem 0 0 5rem;
+  margin: 1rem;
 }
 #table{
  width: 100%;

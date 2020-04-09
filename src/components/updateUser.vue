@@ -156,7 +156,7 @@ export default {
 
         } else {
           that.$message({
-            message: '失败，可能是网络故障',
+            message: response.data.message,
             type: 'error',
             duration: 2000
           })

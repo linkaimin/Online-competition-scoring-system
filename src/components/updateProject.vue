@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+  <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
               
               </el-menu-item-group>
             </el-submenu>
@@ -66,12 +66,14 @@
               <div class="item">
                相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
+                <div class="item">
+               超链接：<el-input v-model="projectUrl" placeholder="请输入内容"></el-input>
+              </div>
           <template class="item">
     <el-upload
-    
-      class="upload-demo"
+     class="upload-demo"
       ref="upload"
-      :action=url
+      action="#"
       :auto-upload="false"
       >
       <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
@@ -93,14 +95,17 @@
 export default {
   data(){
     return{
-      name:"",
+     name:"",
       leader:"",
       unit:"",
       info:"",
-      activityId:"",
+      activity:"",
       fileList: [],
       url:"",
-      projectId:"",
+      options:[],
+      projectUrl:'',
+      upData:{},
+      activityId:"",
     }
   },
   mounted(){
@@ -115,11 +120,10 @@ export default {
       this.info = data.info;
       this.activityId = data.activityId;
       this.projectId = data.projectId
+      this.projectUrl = data.projectUrl
       this.url ="http://39.97.112.80:8080/jwc/document/upload/"+this.projectId;
       },
-        submitUpload() {
-        this.$refs.upload.submit();
-      },
+
       handleRemove(file, fileList) {
         console.log(file, fileList);
       },
@@ -129,27 +133,49 @@ export default {
        up: function () {
       var that = this;
         that.$axios({
-  data:{"projectId" : that.projectId,
+  data:{"activityId" : that.activityId,
 	"info" : that.info,
 	"unit" : that.unit,
 	"leader" : that.leader,
-    "name" : that.name,
-    "activityId" : that.activityId,
+  "score"  : 0,
+  "name" : that.name,
+ 
   },
-    method:'put',
+    method:'post',
     url:'/project ',
   })
   .then(function (response) {
-    
     console.log(response);
-      if (response.data.resultCode === 200) {
-          that.submitUpload();    
-        that.$message({
-            message: '修改成功',
+      if (response.data.resultCode === 200) { 
+      let file = that.$refs.upload.uploadFiles[0].raw;
+      console.log(file)
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
+      that.$axios.post(`http://118.24.41.50:8083/jwc/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        .then(response => {
+  that.$message({
+            message: '增加成功',
             type: 'success',
             duration: 2000
           })
-             
+        }).catch(() => {
+      });
+
+        // async function test1() {
+        //     await test2();
+        //     that.submitUpload();     
+      
+        // }
+        // async function test2() {
+          
+        //      that.upData = {document:{
+        //        projectId:that.activityId,
+        //        docUrl:that.projectUrl
+        //      }}
+        //      that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
+        // }
+        // test1();
           // function* fun(){
           // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
           // yield '1';
@@ -171,8 +197,7 @@ export default {
   })
   .catch(function (error) {
     console.log(error);
-  });
-
+  }); 
     } ,
  exit: function () {
       var that = this;
@@ -207,6 +232,8 @@ export default {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
   }
+  
+
 </script>
 
 <style>

@@ -79,6 +79,45 @@
     </el-date-picker>
   </div>
               </div>
+     <el-button  type="text" @click="dialogFormVisible = true">选择活动相关用户</el-button>
+
+<el-dialog title="用户姓名" :visible.sync="dialogFormVisible">
+  <el-form :model="form1">
+     <el-checkbox-group v-model="list" >
+        <label id="checkbox" v-for="item in user" :key = item.userId>
+    <el-checkbox :label=item.userId >{{item.userName}}</el-checkbox>
+  </label>
+
+  </el-checkbox-group>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
+<br>
+     <el-button type="text" @click="dialogFormVisible1 = true">选择分数统计方法</el-button>
+
+<el-dialog title="统计方法" :visible.sync="dialogFormVisible1">
+  <el-form :model="form2">
+    <el-checkbox-group 
+    v-model="tag"
+    :max="1">
+    <el-checkbox :label="1" >所有专家总分取平均分</el-checkbox>
+    <br>
+     <el-checkbox :label="2" >所有专家每一项打分先取平均分，然后取和</el-checkbox>
+      <br>
+      <el-checkbox :label="3" >所有专家每一项打分去掉一对最高分和最低分后每一项平均分，然后取和</el-checkbox>
+      <br>
+       <el-checkbox :label="4" >所有专家总分去掉一对最高分和对低分后取平均分</el-checkbox>
+  </el-checkbox-group>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible1 = false">确 定</el-button>
+  </div>
+</el-dialog>
+
               <div id='btn'>
                <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
                </div>
@@ -92,17 +131,63 @@
 export default {
   data(){
     return{
+      list:[],
+      tag:[],
+      userName:'',
+      userId:'',
       name:"",
       info:"",
       unit:"",
       value1: '',
       value2: '',
+        dialogFormVisible1: false,
+        dialogFormVisible: false,
+        form1: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+         form2: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+        formLabelWidth: '100px',
+        user:[],
+        
     }
   },
   mounted(){
-
+  this.lis()
   },
   methods: {
+  lis(){
+    var that = this;
+     this.$axios({
+      data:{
+	    "role" : "2"
+      },
+      method:"post",
+      url:'/user'
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.user = response.data.data
+       console.log(that.user)
+      }
+     })
+  },
  exit: function () {
       var that = this;
              this.$axios.get('/logout', {
@@ -139,7 +224,9 @@ export default {
         "info" : that.info,
         "startTime" : that.value1,
         "endTime" : that.value2,
-        "unit" : that.unit
+        "unit" : that.unit,
+        "list":that.list,
+        "tag":that.tag.pop()
       },
       method:"post",
       url:'/activity'
@@ -176,6 +263,9 @@ export default {
 </script>
 
 <style>
+#checkbox{
+  margin: 10px;
+}
 .class{
   width:80%;
 }

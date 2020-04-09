@@ -108,7 +108,7 @@
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index,scope.row.activityId)">删除</el-button>
+          @click="handleDelete(scope.$index,scope.row.userId)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -136,7 +136,7 @@ export default {
      var that = this;
      this.$axios({
       data:{
-	    "role" : "1"
+	    "role" : "2"
       },
       method:"post",
       url:'/user'
@@ -157,10 +157,11 @@ export default {
          })
       },
       handleDelete(index, row) {
+        console.log(row)
         var that = this
         this.$axios({
           method:"DELETE",
-          url:"/activity/"+row,
+          url:"/user/"+row,
         })
         .then(function (response){
           if (response.data.resultCode === 200) {
@@ -169,7 +170,12 @@ export default {
             type: 'success',
             duration: 2000
           })
-         that.$axios.get('/activity', {
+         that.$axios({
+      data:{
+	    "role" : "2"
+      },
+      method:"post",
+      url:'/user'
      })
      .then(function (response){
        console.log(response);

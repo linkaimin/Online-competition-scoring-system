@@ -58,7 +58,7 @@
       v-for="item in options"
       :key="item.value"
       :label="item.name"
-      :value="item.name"
+      :value="item.activityId"
      >
     </el-option>
   </el-select>
@@ -68,7 +68,7 @@
           <el-input v-model="item.value" placeholder="例：创新性"></el-input>
         </el-form-item>
          <el-form-item label="总分占比：">
-          <el-input v-model="item.part" placeholder="例：0.3"></el-input>
+          {{part}}
         </el-form-item>
         <el-button type="primary" @click="Delete(item.index)">删除</el-button>
       </el-form>
@@ -86,17 +86,17 @@
 export default {
    
   data(){
-    return{ 
+    return{
+         activity:'', 
         val:'',
          options: [],
        FormArr: [
         {
           index: 0,
           value: '',
-          part:''
         }
       ],
-        activity:"",
+     part:1
     }
   },
   mounted(){
@@ -116,18 +116,39 @@ export default {
       }
      })
       },
-        make:function() {
+  make:function() {
+          var that = this;
+         
+             this.$axios({
+               data:{
+                 part:that.part,
+                 form : that.FormArr,
+                 activity : that.activity
+               },
+               method:"post",
+               url:"/activityId"
+     })
+     .then(function (response){
+         that.$message({
+            message: '定制成功',
+            type: 'success',
+            duration: 2000
+          })
+          })
+    
+          
         },
 	   AddForm :function() {
       this.FormArr.push({
         index: this.FormArr.length,
         value: '',
-        part:''
       })
+      this.part = (1/this.FormArr.length).toFixed(2)
       console.log(this.FormArr)
     },
     Delete:function (index) {
       this.FormArr.splice(index, 1)
+     this.part = (1/this.FormArr.length).toFixed(2)
       for (let i in this.FormArr) {
         this.FormArr[i].index = i
       }

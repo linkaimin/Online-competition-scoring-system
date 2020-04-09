@@ -24,7 +24,7 @@ const MyAxios = Axios.create({
 Vue.use(VueAxios, MyAxios)
 import 'element-ui/lib/theme-chalk/index.css'
 Axios.defaults.withCredentials=true;
-Axios.defaults.baseURL = 'http://39.97.112.80:8080/jwc'
+Axios.defaults.baseURL = 'http://118.24.41.50:8083/jwc/'
 Vue.config.productionTip = false
 import VueSessionStorage from 'vue-sessionstorage'
 Vue.use(VueSessionStorage)

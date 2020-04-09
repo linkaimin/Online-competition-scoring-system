@@ -61,7 +61,7 @@
       v-for="item in options"
       :key="item.value"
       :label="item.name"
-      :value="item.name"
+      :value="item.activityId"
      >
     </el-option>
   </el-select>
@@ -76,11 +76,14 @@
               <div class="item">
                相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
+                <div class="item">
+               超链接：<el-input v-model="projectUrl" placeholder="请输入内容"></el-input>
+              </div>
           <template class="item">
     <el-upload
       class="upload-demo"
       ref="upload"
-      :action=url
+      action='#'
       :auto-upload="false"
       >
       <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
@@ -109,7 +112,9 @@ export default {
       activity:"",
       fileList: [],
       url:"",
-      options:[]
+      options:[],
+      projectUrl:'',
+      upData:{}
     }
   },
   mounted(){
@@ -131,6 +136,7 @@ export default {
       },
           submitUpload() {
         this.$refs.upload.submit();
+         
       },
       handleRemove(file, fileList) {
         console.log(file, fileList);
@@ -138,45 +144,52 @@ export default {
       handlePreview(file) {
         console.log(file);
       },
-       up: function () {
+        up: function () {
       var that = this;
-this.$axios.get('/activity?'+"name="+this.activity, {
-
-  })
-  .then(function (response) {
-    console.log(response);
-      if (response.data.resultCode === 200) {
-       var activityId = response.data.data[0].activityId
-       console.log(response.data.data[0].activityId)
         that.$axios({
-  data:{"activityId" : activityId,
+  data:{"activityId" : that.activity,
 	"info" : that.info,
 	"unit" : that.unit,
 	"leader" : that.leader,
   "score"  : 0,
   "name" : that.name,
+ 
   },
     method:'post',
     url:'/project ',
   })
   .then(function (response) {
     console.log(response);
-      if (response.data.resultCode === 200) {
-        that.$message({
+      if (response.data.resultCode === 200) { 
+      let file = that.$refs.upload.uploadFiles[0].raw;
+      console.log(file)
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
+      that.$axios.post(`http://118.24.41.50:8083/jwc/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        .then(response => {
+  that.$message({
             message: '增加成功',
             type: 'success',
             duration: 2000
           })
-          console.log(response.data.data)
-        async function test1() {
-            await test2();
-            that.submitUpload();     
+        }).catch(() => {
+      });
+
+        // async function test1() {
+        //     await test2();
+        //     that.submitUpload();     
       
-        }
-        async function test2() {
-             that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
-        }
-        test1();
+        // }
+        // async function test2() {
+          
+        //      that.upData = {document:{
+        //        projectId:that.activityId,
+        //        docUrl:that.projectUrl
+        //      }}
+        //      that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
+        // }
+        // test1();
           // function* fun(){
           // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
           // yield '1';
@@ -198,19 +211,7 @@ this.$axios.get('/activity?'+"name="+this.activity, {
   })
   .catch(function (error) {
     console.log(error);
-  });
-        } else {
-          that.$message({
-            message: '该活动名称不存在！',
-            type: 'error',
-            duration: 2000
-          })
-        }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-   
+  }); 
     } ,
  exit: function () {
       var that = this;

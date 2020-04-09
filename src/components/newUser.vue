@@ -19,7 +19,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
               
               </el-menu-item-group>
             </el-submenu>
@@ -53,17 +53,14 @@
               <div slot="header" class="clearfix">
                 <span>新增用户</span> 
               </div>
-                <div class="item">
-              负责活动：<el-input v-model="activity" placeholder="请输入内容"></el-input>
-               </div>
               <div class="item">
-              姓名：<el-input v-model="name" placeholder="请输入内容"></el-input>
+              姓名：<el-input class="nu" v-model="name" placeholder="请输入内容"></el-input>
                </div><div class="item">
-               账号：<el-input v-model="phone" placeholder="请输入内容"></el-input>
+               账号：<el-input class="nu" v-model="phone" placeholder="请输入内容"></el-input>
               </div><div class="item">
-                密码：<el-input v-model="password" placeholder="请输入内容"></el-input>
+                密码：<el-input class="nu" v-model="password" placeholder="请输入内容"></el-input>
               </div><div class="item">
-               单位：<el-input v-model="unit" placeholder="请输入内容"></el-input>
+               单位：<el-input class="nu" v-model="unit" placeholder="请输入内容"></el-input>
               </div>
               <div id='btn'>
                <el-button id="button"  type="primary" plain @click="add">确定</el-button>
@@ -81,7 +78,6 @@ export default {
       name:"",
       phone:"",
       unit:"",
-      activity:"",
       password:""
     }
   },
@@ -122,7 +118,6 @@ export default {
       this.$axios({
       data: {
         unit:this.unit,
-        activity:this.activity,
       userName:this.name,
       phone:this.phone,
       password:this.password
@@ -144,7 +139,7 @@ export default {
        
         } else {
           that.$message({
-            message: '添加失败，请稍后再试',
+             message: response.data.message,
             type: 'error',
             duration: 2000
           })
@@ -172,7 +167,7 @@ export default {
 
   text-align:center; 
 }
-.el-input{
+.nu{
   width: 70%;
   margin: 1%;
 }
