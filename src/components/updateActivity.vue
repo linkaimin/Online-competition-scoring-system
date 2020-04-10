@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               
               
               </el-menu-item-group>
             </el-submenu>
@@ -79,6 +79,59 @@
     </el-date-picker>
   </div>
               </div>
+                 <el-button  type="text" @click="dialogFormVisible = true">选择活动相关用户</el-button>
+
+<el-dialog title="用户姓名" :visible.sync="dialogFormVisible">
+  <el-form :model="form1">
+     <el-checkbox-group v-model="list" >
+        <label id="checkbox" v-for="item in user" :key = item.userId>
+    <el-checkbox :label=item.userId >{{item.userName}}</el-checkbox>
+  </label>
+
+  </el-checkbox-group>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
+<br>
+     <el-button type="text" @click="dialogFormVisible1 = true">选择分数统计方法</el-button>
+
+<el-dialog title="统计方法" :visible.sync="dialogFormVisible1">
+  <el-form :model="form2">
+    <el-checkbox-group 
+    v-model="tag"
+    :max="1">
+    <el-checkbox :label="1" >所有专家总分取平均分</el-checkbox>
+    <br>
+     <el-checkbox :label="2" >所有专家每一项打分先取平均分，然后取和</el-checkbox>
+      <br>
+      <el-checkbox :label="3" >所有专家每一项打分去掉一对最高分和最低分后每一项平均分，然后取和</el-checkbox>
+      <br>
+       <el-checkbox :label="4" >所有专家总分去掉一对最高分和对低分后取平均分</el-checkbox>
+  </el-checkbox-group>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible1 = false">确 定</el-button>
+  </div>
+</el-dialog>
+ <el-main>
+    <el-col :span="24" class="warp-main" v-loading="">
+      <el-form :inline="true" class="demo-form-inline" v-for="(item, i) in FormArr" :key="i">
+        <el-form-item label="评分方向：">
+          <el-input v-model="item.lName" placeholder="例：创新性"></el-input>
+        </el-form-item>
+         <el-form-item label="总分占比：">
+          <el-input v-model="item.part" placeholder="例：0.30"></el-input>
+        </el-form-item>
+        <el-button type="primary" @click="Delete(item.index)">删除</el-button>
+      </el-form>
+      <el-button type="primary" @click="AddForm">增加更多</el-button>
+      
+    </el-col>
+  </el-main>
               <div id='btn'>
                <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
                </div>
@@ -92,21 +145,83 @@
 export default {
   data(){
     return{
+      FormArr: [
+        {
+          lName: '',
+          part:'',
+          index:'0'
+        }
+      ],
+     part:1,
+      list:[],
+      tag:[],
+      userName:'',
+      userId:'',
       name:"",
       info:"",
       unit:"",
       value1: '',
       value2: '',
-      activityId:""
+        dialogFormVisible1: false,
+        dialogFormVisible: false,
+        form1: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+         form2: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+        formLabelWidth: '100px',
+        user:[],
     }
   },
   mounted(){
   this.text()
-  this.list()
+  this.lis()
   },
   methods: {
-     list(){
-
+      AddForm :function() {
+      this.FormArr.push({
+          lName: '',
+          part:'',
+          index: this.FormArr.length,
+      })
+      this.part = (1/this.FormArr.length).toFixed(2)
+      console.log(this.FormArr)
+    },
+    Delete:function (index) {
+      this.FormArr.splice(index, 1)
+     this.part = (1/this.FormArr.length).toFixed(2)
+    },
+     lis(){
+var that = this;
+     this.$axios({
+      data:{
+	    "role" : "2"
+      },
+      method:"post",
+      url:'/user'
+     })
+     .then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+        that.user = response.data.data
+       console.log(that.user)
+      }
+     })
      },
       text(){
         var data = this.$route.query.ruleForm;
@@ -116,6 +231,9 @@ export default {
         this.value1 = data.startTime;
         this.value2 = data.endTime;
         this.activityId = data.activityId;
+        this.list = data.list;
+        this.tag = data.tag;
+        this.type = data.type;
       },
  exit: function () {
       var that = this;
@@ -149,12 +267,14 @@ export default {
       var that = this;
              this.$axios({
       data:{
-        "activityId" : that.activityId,
         "name" : that.name,
         "info" : that.info,
         "startTime" : that.value1,
         "endTime" : that.value2,
-        "unit" : that.unit
+        "unit" : that.unit,
+        "list":that.list,
+        "type":that.tag.pop(),
+        "tag" : that.FormArr,
       },
       method:"put",
       url:'/activity'

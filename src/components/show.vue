@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-               <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+              
               
               </el-menu-item-group>
             </el-submenu>

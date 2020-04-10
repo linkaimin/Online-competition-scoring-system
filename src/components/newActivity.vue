@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               
               
               </el-menu-item-group>
             </el-submenu>
@@ -117,7 +117,21 @@
     <el-button type="primary" @click="dialogFormVisible1 = false">确 定</el-button>
   </div>
 </el-dialog>
-
+ <el-main>
+    <el-col :span="24" class="warp-main" v-loading="">
+      <el-form :inline="true" class="demo-form-inline" v-for="(item, i) in FormArr" :key="i">
+        <el-form-item label="评分方向：">
+          <el-input v-model="item.lName" placeholder="例：创新性"></el-input>
+        </el-form-item>
+         <el-form-item label="总分占比：">
+          <el-input v-model="item.part" placeholder="例：0.30"></el-input>
+        </el-form-item>
+        <el-button type="primary" @click="Delete(item.index)">删除</el-button>
+      </el-form>
+      <el-button type="primary" @click="AddForm">增加更多</el-button>
+      
+    </el-col>
+  </el-main>
               <div id='btn'>
                <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
                </div>
@@ -131,6 +145,13 @@
 export default {
   data(){
     return{
+        FormArr: [
+        {
+          lName: '',
+          part:'',
+          index:'0'
+        }
+      ],
       list:[],
       tag:[],
       userName:'',
@@ -164,13 +185,26 @@ export default {
         },
         formLabelWidth: '100px',
         user:[],
-        
+ 
     }
   },
   mounted(){
   this.lis()
   },
   methods: {
+       AddForm :function() {
+      this.FormArr.push({
+          lName: '',
+          part:'',
+          index: this.FormArr.length,
+      })
+      this.part = (1/this.FormArr.length).toFixed(2)
+      console.log(this.FormArr)
+    },
+    Delete:function (index) {
+      this.FormArr.splice(index, 1)
+     this.part = (1/this.FormArr.length).toFixed(2)
+    },
   lis(){
     var that = this;
      this.$axios({
@@ -218,6 +252,7 @@ export default {
     } ,
    add: function () {
       var that = this;
+      
              this.$axios({
       data:{
         "name" : that.name,
@@ -226,7 +261,8 @@ export default {
         "endTime" : that.value2,
         "unit" : that.unit,
         "list":that.list,
-        "tag":that.tag.pop()
+        "type":that.tag.pop(),
+        "tag" : that.FormArr,
       },
       method:"post",
       url:'/activity'

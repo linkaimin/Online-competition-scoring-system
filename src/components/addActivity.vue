@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               
               
               </el-menu-item-group>
             </el-submenu>
@@ -85,15 +85,16 @@
       ref="upload"
       action='#'
       :auto-upload="false"
+      :limit = num
       >
       <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
      
-      <div slot="tip" class="el-upload__tip">只能上传<b>压缩包</b>文件</div>
+      <div slot="tip" class="el-upload__tip">只能上传<b>一个压缩包</b>文件</div>
     </el-upload>
 </template>
 
               <div id='btn'>
-               <el-button id="button" @click="up"  type="primary" plain>确定</el-button>
+               <el-button id="button" v-loading.fullscreen.lock="fullscreenLoading" @click="up"  type="primary" plain>确定</el-button>
                </div>
             </el-card>
       </el-container>
@@ -114,7 +115,9 @@ export default {
       url:"",
       options:[],
       projectUrl:'',
-      upData:{}
+      upData:{},
+      fullscreenLoading: false,
+      num:1
     }
   },
   mounted(){
@@ -145,6 +148,7 @@ export default {
         console.log(file);
       },
         up: function () {
+           this.fullscreenLoading = true;
       var that = this;
         that.$axios({
   data:{"activityId" : that.activity,
@@ -166,14 +170,16 @@ export default {
       let formData = new FormData();
       formData.append('file', file);
       formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
-      that.$axios.post(`http://118.24.41.50:8083/jwc/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+      that.$axios.post(`/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
         .then(response => {
+           that.fullscreenLoading = false;
   that.$message({
             message: '增加成功',
             type: 'success',
             duration: 2000
           })
         }).catch(() => {
+           that.fullscreenLoading = false;
       });
 
         // async function test1() {
@@ -202,6 +208,7 @@ export default {
 
           // setTimeout(function(){  that.submitUpload(); }, 300);
         } else {
+           that.fullscreenLoading = false;
           that.$message({
             message: '添加失败，可能是网络故障',
             type: 'error',

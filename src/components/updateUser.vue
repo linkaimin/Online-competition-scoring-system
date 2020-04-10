@@ -20,7 +20,7 @@
               <template slot="title"><i class="el-icon-location"></i>评估结果统计</template>
               <el-menu-item-group >
                 <el-menu-item index="/show"><i class="el-icon-tickets"></i>评估结果展示</el-menu-item>
-                <el-menu-item index="/formulate"><i class="el-icon-tickets"></i>评估标准制定</el-menu-item>
+               
               
               </el-menu-item-group>
             </el-submenu>
@@ -62,11 +62,7 @@
               用户账号：<el-input class="activity" v-model="phone" placeholder="请输入内容"></el-input>
                </div>
 
-            </div><div class="item" >
-             
-                负责活动：<el-input class="activity" v-model="activity" placeholder="请输入内容"></el-input>
-              
-              </div>
+            </div>
              
               <div id='btn'>
                <el-button id="button" @click="add"  type="primary" plain>确定</el-button>
