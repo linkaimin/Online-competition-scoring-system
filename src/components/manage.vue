@@ -134,7 +134,7 @@ export default {
 
       select(){
      var that = this;
-    this.$axios.get('/activity', {
+    this.$axios.get('/allActivity', {
 
      })
      .then(function (response){

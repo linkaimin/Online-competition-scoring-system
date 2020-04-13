@@ -225,6 +225,7 @@ var that = this;
      },
       text(){
         var data = this.$route.query.ruleForm;
+        console.log(data)
         this.name = data.name;
         this.unit = data.unit;
         this.info = data.info;

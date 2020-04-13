@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <el-container class="con">
       <el-header class="header" height="80px">
         <el-row>
@@ -51,8 +52,17 @@
 
         </el-aside>            
         <div  id="table">
-          <div id="box">   
-  <el-input id="find" v-model="find" placeholder="请输入项目所属的活动名称"></el-input>  
+          <div id="box1">   
+  <el-select id = "find1" v-model="activity" placeholder="请选择">
+    <el-option
+      
+      v-for="item in options"
+      :key="item.value"
+      :label="item.name"
+      :value="item.activityId"
+     >
+    </el-option>
+  </el-select>
 <el-button id="findBtn"  type="primary" plain @click="select">确定</el-button>  
    </div>
         <el-table     
@@ -98,6 +108,9 @@
         <el-button
           size="mini"
           @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
+          <el-button
+          size="mini"
+          @click="handledocument(scope.$index,scope.row)">查看文件</el-button>
         <el-button
           size="mini"
           type="danger"
@@ -106,8 +119,20 @@
     </el-table-column>
   </el-table>
   </div>
+
       </el-container>
     </el-container>
+        <el-dialog title="查看文件" :visible.sync="dialogFormVisible">
+
+        <label id="checkbox" v-for="item in file" :key = item.index>
+        <a :href=item>{{item}}</a><br>
+        </label>
+
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
   </div>
 </template>
 
@@ -118,36 +143,58 @@ export default {
     return{
        tableData:[],
        find:"",
-       activityId:""
+       activityId:"",
+       file:[],
+       dialogFormVisible: false,
+       options:[],
+       activity:''
     }
   },
+   mounted(){
+    this.select1()
+  },
   methods: {
-
-      select(){
-     var that = this;
- this.$axios.get('/activity?'+"name="+this.find, {
-  
+          select1(){
+        var that = this;
+        this.$axios.get('/activity', {
      })
      .then(function (response){
        console.log(response);
+        console.log(that.options)
       if (response.data.resultCode === 200) {
-            
-            that.activityId = response.data.data[0].activityId
-       console.log(response.data.data[0].activityId)
+         that.options = response.data.data;
+       console.log(that.options)
+      }
+     })
+      },
+      handledocument(index, row){
+        this.dialogFormVisible = true
+        var that = this
+       this.$axios.get('/document/preview/'+row.projectId, {
+  
+     }).then(function (response){
+      if (response.data.resultCode === 200) {
+          that.file = response.data.data.file
+          console.log(response.data.data)
+      }
+     })
+      },
+      select(){
+     var that = this;
+     that.activityId = this.activity
         that.$axios({
        url:"/pro",
        method:"post",
         data:{
         "activityId" : that.activityId
-      }
+      },
+
   })
   .then(function (response) {
     console.log(response.data);
      console.log(response.data.data);
     that.tableData = response.data.data;
       })
-      }
-     })
    },
        handleEdit(index, row) {
          console.log(row)
@@ -231,16 +278,15 @@ export default {
 }
 #findBtn{
  height: 50%;
- margin-right:40%; 
+ margin-right:2rem; 
  margin-top:1rem; 
 }
 #box{
-  display: flex;
+  
 }
-#find{
-  display:inline;
-  width: 70%;
-  margin: 1rem 0 0 5rem;
+#find1{
+   margin: 1rem  0 1rem 1rem;
+   width: 300px;
 }
 #table{
  width: 100%;
