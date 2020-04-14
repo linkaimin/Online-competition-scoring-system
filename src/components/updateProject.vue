@@ -122,7 +122,7 @@ export default {
       this.info = data.info;
       this.activityId = data.activityId;
       this.projectId = data.projectId
-      this.projectUrl = data.projectUrl
+      this.docUrl = data.docUrl
       this.url ="http://39.97.112.80:8080/jwc/document/upload/"+this.projectId;
       },
 
@@ -222,11 +222,7 @@ export default {
           that.$router.push('/')
        
         } else {
-          that.$message({
-            message: '退出失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+          that.$router.push('/')
         }
   })
   .catch(function (error) {

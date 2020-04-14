@@ -121,7 +121,7 @@
     <el-col :span="24" class="warp-main" v-loading="">
       <el-form :inline="true" class="demo-form-inline" v-for="(item, i) in FormArr" :key="i">
         <el-form-item label="评分方向：">
-          <el-input v-model="item.lName" placeholder="例：创新性"></el-input>
+          <el-input v-model="item.lname" placeholder="例：创新性"></el-input>
         </el-form-item>
          <el-form-item label="总分占比：">
           <el-input v-model="item.part" placeholder="例：0.30"></el-input>
@@ -239,11 +239,7 @@ export default {
           that.$router.push('/')
        
         } else {
-          that.$message({
-            message: '退出失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+         that.$router.push('/')
         }
   })
   .catch(function (error) {

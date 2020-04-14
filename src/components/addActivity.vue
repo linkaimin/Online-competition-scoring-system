@@ -77,7 +77,7 @@
                相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
                 <div class="item">
-               超链接：<el-input v-model="projectUrl" placeholder="请输入内容"></el-input>
+               超链接：<el-input v-model="docUrl" placeholder="请输入内容"></el-input>
               </div>
           <template class="item">
     <el-upload
@@ -117,7 +117,8 @@ export default {
       projectUrl:'',
       upData:{},
       fullscreenLoading: false,
-      num:1
+      num:1,
+      docUrl:""
     }
   },
   mounted(){
@@ -166,7 +167,7 @@ export default {
     console.log(response);
       if (response.data.resultCode === 200) { 
       let file = that.$refs.upload.uploadFiles[0].raw;
-      console.log(file)
+      console.log(that.docUrl)
       let formData = new FormData();
       formData.append('file', file);
       formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
@@ -237,11 +238,7 @@ export default {
           that.$router.push('/')
        
         } else {
-          that.$message({
-            message: '退出失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+       that.$router.push('/')
         }
   })
   .catch(function (error) {

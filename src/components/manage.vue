@@ -87,7 +87,7 @@
       width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.startTime }}</el-tag>
+            <el-tag size="medium">{{ scope.row.newstartTime }}</el-tag>
           </div>
       </template>
     </el-table-column>
@@ -96,7 +96,7 @@
       width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.endTime }}</el-tag>
+            <el-tag size="medium">{{ scope.row.newendTime }}</el-tag>
           </div>
       </template>
     </el-table-column>
@@ -131,7 +131,25 @@ export default {
   this.select()
   },
   methods: {
-
+    convertUTCTimeToLocalTime(UTCDateString) {
+        if(!UTCDateString){
+          return '-';
+        }
+        function formatFunc(str) {    //格式化显示
+          return str > 9 ? str : '0' + str
+        }
+        var date2 = new Date(UTCDateString);     //这步是关键
+        var year = date2.getFullYear();
+        var mon = formatFunc(date2.getMonth() + 1);
+        var day = formatFunc(date2.getDate());
+        var hour = date2.getHours();
+        var noon = hour >= 12 ? 'PM' : 'AM';
+        hour = hour>=12?hour-12:hour;
+        hour = formatFunc(hour);
+        var min = formatFunc(date2.getMinutes());
+        var dateStr = year+'-'+mon+'-'+day+' '+noon +' '+hour+':'+min;
+        return dateStr;
+},
       select(){
      var that = this;
     this.$axios.get('/allActivity', {
@@ -142,6 +160,11 @@ export default {
       if (response.data.resultCode === 200) {
         that.tableData = response.data.data
        console.log(response.data.data)
+       for(let i of that.tableData){
+       i.newstartTime = that.convertUTCTimeToLocalTime(i.startTime);
+       i.newendTime = that.convertUTCTimeToLocalTime(i.endTime);
+       }
+       console.log(that.tableData)
       }
      })
    },
@@ -171,7 +194,12 @@ export default {
        console.log(response);
       if (response.data.resultCode === 200) {
         that.tableData = response.data.data
-       console.log(response.data.data)
+       for(let i of that.tableData){
+       i.newstartTime = that.convertUTCTimeToLocalTime(i.startTime);
+       i.newendTime = that.convertUTCTimeToLocalTime(i.endTime);
+       }
+       console.log(that.tableData)
+      
       }
      })
           }
@@ -194,11 +222,7 @@ export default {
           that.$router.push('/')
        
         } else {
-          that.$message({
-            message: '退出失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+         that.$router.push('/')
         }
   })
   .catch(function (error) {

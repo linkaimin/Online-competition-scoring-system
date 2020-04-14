@@ -211,11 +211,7 @@ export default {
           that.$router.push('/')
        
         } else {
-          that.$message({
-            message: '退出失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+         that.$router.push('/')
         }
   })
   .catch(function (error) {
