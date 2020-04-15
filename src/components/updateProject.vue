@@ -155,7 +155,7 @@ export default {
       let formData = new FormData();
       formData.append('file', file);
       formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
-      that.$axios.post(`/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+      that.$axios.put(`/document/update`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
         .then(response => {
            that.fullscreenLoading = false;
   that.$message({
