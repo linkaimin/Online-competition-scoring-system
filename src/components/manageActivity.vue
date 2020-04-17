@@ -78,7 +78,7 @@
     </el-table-column>
     <el-table-column
       label="项目名称"
-      width="250">
+      width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.name }}</el-tag>
@@ -96,7 +96,7 @@
     </el-table-column>
      <el-table-column
       label="所属单位"
-      width="230">
+      width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.unit }}</el-tag>
@@ -108,6 +108,9 @@
         <el-button
           size="mini"
           @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
+          <el-button
+          size="mini"
+          @click="handleExcel(scope.$index,scope.row)">生成Excel</el-button>
           <el-button
           size="mini"
           @click="handledocument(scope.$index,scope.row)">查看文件</el-button>
@@ -154,6 +157,9 @@ export default {
     this.select1()
   },
   methods: {
+    handleExcel(index, row){
+    window.open(`http://140.143.194.109:8080/jwc/excel/project-total/export/${row.projectId}`)
+    },
           select1(){
         var that = this;
         this.$axios.get('/activity', {

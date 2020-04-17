@@ -53,6 +53,7 @@
         <div  id="table">
           
           <div id="box">
+               
       <el-select id="sell" v-model="activity" placeholder="活动名称">
     <el-option
     
@@ -65,18 +66,12 @@
   </el-select>   
   <el-input id="find" v-model="project" placeholder="项目名称"></el-input>  
 <el-button id="findBtn"  type="primary" plain @click="show">确定</el-button>  
+
    </div>
+
         <el-table     
     :data=tableData
     style="width: 100%">
-    <el-table-column
-      label="项目名称"
-      width="250">
-      <template slot-scope="scope">
-        <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.project }}</span>
-      </template>
-    </el-table-column>
     <el-table-column
       label="评分用户名"
       width="250">
@@ -97,15 +92,24 @@
     </el-table-column>
      <el-table-column
       label="分数"
-      width="400">
+      width="250">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.score }}</el-tag>
+            <el-tag size="medium">{{ scope.row.sum }}</el-tag>
           </div>
       </template>
     </el-table-column>
-
+     <el-table-column
+      label="统计方式"
+      width="250">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.type }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
   </el-table>
+  <h2 id="lastScore">最终得分：{{score}}</h2>
   </div>
       </el-container>
     </el-container>
@@ -123,6 +127,8 @@ export default {
        activity:"",
        options:[],
        project:'',
+       score:0,
+       projectId:'',
     }
   },
     mounted(){
@@ -134,13 +140,106 @@ export default {
           var that = this;
            that.$axios.get(`/project/getId/${that.activity}/${that.project}`, {   
      }).then(function (response){
+       that.projectId = response.data.data;
        that.$axios({
          url:'/scoreList',
          method:'post',
          data:{"projectId" :response.data.data}
-     })       
      }).then(function (response){
-       that.tableData = response.data.data;
+       if (response.data.resultCode === 200) {
+         that.tableData = response.data.data;
+         let sum = 0;
+         
+         for(let i of that.tableData){
+           for(let j of i.score){
+            sum += Number(j.part) * Number(j.value);
+         }
+           i.sum = sum;
+           sum = 0;
+         }
+      console.log(that.tableData)
+      }
+      let temp = 0;
+      if(that.tableData[0].type === 1){
+        for(let i of that.tableData){
+           temp += i.sum;
+           that.score = (temp/that.tableData.length).toFixed(2);
+        }
+        that.$axios({
+          method:'put',
+          url:"/project",
+          data:{
+            projectId:that.projectId,
+            score:that.score
+          }
+        }).then(function (response){
+           if (response.data.resultCode === 200) {
+          console.log(that.score)
+        }
+        })
+      }
+       if(that.tableData[0].type === 2){
+        for(let i of that.tableData){
+           temp += i.sum;
+           that.score = temp.toFixed(2);
+        }
+           that.$axios({
+          method:'put',
+          url:"/project",
+          data:{
+            projectId:that.projectId,
+            score:that.score
+          }
+        }).then(function (response){
+           if (response.data.resultCode === 200) {
+          console.log(that.score)
+        }
+        })
+      }
+
+       if(that.tableData[0].type === 3){
+        that.$axios({
+          method:'post',
+          url:"/calculate",
+          data:{
+            projectId:that.projectId
+          }
+        }).then(function (response){
+           if (response.data.resultCode === 200) {
+          that.score = response.data.data;
+          console.log(that.score)
+        }
+        })
+      }
+
+       if(that.tableData[0].type === 4){
+           let max = 0;
+           let array = [];
+        for(let i of that.tableData){
+          array.push(i.sum)
+        }
+        for(let j of array){
+           max += j; 
+        }
+        
+        max = max - Math.max(...array) - Math.min(...array)
+        console.log(max)
+        that.score = (max/(array.length-2)).toFixed(2);
+          that.$axios({
+          method:'put',
+          url:"/project",
+          data:{
+            projectId:that.projectId,
+            score:that.score
+          }
+        }).then(function (response){
+           if (response.data.resultCode === 200) {
+          console.log(that.score)
+        }
+        })
+      }
+ 
+     })       
      })
         },
         select(){
@@ -231,6 +330,9 @@ export default {
 <style>
 *{
   margin: 0; padding: 0;
+}
+#lastScore{
+  margin: 1rem;
 }
 #sell{
    margin: 1rem  0 1rem 1rem;

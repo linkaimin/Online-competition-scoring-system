@@ -67,7 +67,7 @@
                相关信息：<el-input v-model="info" placeholder="请输入内容"></el-input>
               </div>
                 <div class="item">
-               超链接：<el-input v-model="projectUrl" placeholder="请输入内容"></el-input>
+               超链接：<el-input v-model="docUrl" placeholder="请输入内容"></el-input>
               </div>
           <template class="item">
     <el-upload

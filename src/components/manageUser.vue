@@ -82,18 +82,9 @@
           </div>
       </template>
     </el-table-column>
-     <el-table-column
-      label="负责活动"
-      width="180">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.activity }}</el-tag>
-          </div>
-      </template>
-    </el-table-column>
 <el-table-column
       label="编号"
-      width="180">
+      width="250">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.userId }}</el-tag>
