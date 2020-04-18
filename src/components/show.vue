@@ -112,13 +112,22 @@
     </el-table-column>
      <el-table-column
       label="统计方式"
-      width="400">
+      width="200">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.type }}</el-tag>
           </div>
       </template>
+      
     </el-table-column>
+    <el-table-column label="操作">
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          @click="handleEdit(scope.$index,scope.row)">下载评分表</el-button>
+      </template>
+    </el-table-column>
+  
   </el-table>
   <h2 id="lastScore">最终得分：{{score}}</h2>
   </div>
@@ -147,7 +156,9 @@ export default {
     this.select()
   },
   methods: {
-  
+        handleEdit(index,row){
+          window.open(`http://140.143.194.109:8080/jwc/excel/project/export/`+row.projectId+'/'+row.userId)
+        },
         show(){
           this.score = '';
           console.log(this.activity)
@@ -289,44 +300,7 @@ export default {
       }
      })
       },
-       handleEdit(index, row) {
-         console.log(row)
-         this.$router.push({
-          path: '/update',
-          query: { ruleForm:row }
-         })
-      },
-      handleDelete(index, row) {
-        var that = this
-        this.$axios({
-          data:{
-        "projectId" : row.projectId,
-        "activityId" : row.activityId
-      },
-          method:"delete",
-          url:"/project",
-        })
-        .then(function (response){
-          if (response.data.resultCode === 200) {
-        that.$message({
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
-          })
-        that.$axios({
-       url:"/pro",
-       method:"post",
-        data:{
-        "activityId" : that.activityId
-      }
-  })
-  .then(function (response) {
-    console.log(response.data.data);
-    that.tableData = response.data.data
-      })
-          }
-        })
-      },
+
  exit: function () {
       var that = this;
       this.$axios.get('/logout', {
