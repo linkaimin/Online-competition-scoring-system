@@ -49,7 +49,7 @@ export default {
   })
   .then(function (response) {
     console.log(response);
-      if (response.data.resultCode === 200) {
+      if (response.data.resultCode === 200&&response.data.data.role === 1) {
          sessionStorage.setItem("session", response.data);
           that.$message({
             message: '登陆成功',
@@ -61,7 +61,7 @@ export default {
        
         } else {
           that.$message({
-            message: '登陆失败，可能是密码或用户名错误',
+            message: '登陆失败，可能是密码错误或没有后台管理权限',
             type: 'error',
             duration: 2000
           })

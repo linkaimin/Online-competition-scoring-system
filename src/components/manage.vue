@@ -52,8 +52,9 @@
         </el-aside>            
         <div  id="table">
         <el-table     
-    :data="tableData"
-    style="width: 100%">
+    style="width: 100%"
+     :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+    >
     
     <el-table-column
       label="活动名称"
@@ -111,7 +112,22 @@
           @click="handleDelete(scope.$index,scope.row.activityId)">删除</el-button>
       </template>
     </el-table-column>
+    <div class="block">
+  <span class="demonstration">页数较少时的效果</span>
+  <el-pagination
+    layout="prev, pager, next"
+    :total="50">
+  </el-pagination>
+</div>
   </el-table>
+  <div class="block">
+ 
+  <el-pagination
+    layout="prev, pager, next"
+    @current-change="current_change"
+    :total=total>
+  </el-pagination>
+</div>
   </div>
       </el-container>
     </el-container>
@@ -123,14 +139,20 @@ export default {
 
   data(){
     return{
-       tableData: [],
-       find:""
+        tableData: [],
+        find:"",
+        total:1000,//默认数据总数
+        pagesize:8,//每页的数据条数
+        currentPage:1,//默认开始页面
     }
   },
   mounted(){
   this.select()
   },
   methods: {
+      current_change:function(currentPage){
+        this.currentPage = currentPage;
+      },
     convertUTCTimeToLocalTime(UTCDateString) {
         if(!UTCDateString){
           return '-';
@@ -143,7 +165,7 @@ export default {
         var mon = formatFunc(date2.getMonth() + 1);
         var day = formatFunc(date2.getDate());
         var hour = date2.getHours();
-        var noon = hour >= 12 ? 'PM' : 'AM';
+        var noon = hour >= 12 ? '下午' : '上午';
         hour = hour>=12?hour-12:hour;
         hour = formatFunc(hour);
         var min = formatFunc(date2.getMinutes());
@@ -160,6 +182,7 @@ export default {
       if (response.data.resultCode === 200) {
         that.tableData = response.data.data
        console.log(response.data.data)
+       that.total = response.data.data.length;
        for(let i of that.tableData){
        i.newstartTime = that.convertUTCTimeToLocalTime(i.startTime);
        i.newendTime = that.convertUTCTimeToLocalTime(i.endTime);

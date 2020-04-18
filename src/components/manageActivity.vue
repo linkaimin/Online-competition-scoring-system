@@ -127,8 +127,8 @@
     </el-container>
         <el-dialog title="查看文件" :visible.sync="dialogFormVisible">
 
-        <label id="checkbox" v-for="item in file" :key = item.index>
-        <a :href=item>{{item}}</a><br>
+        <label id="checkbox" v-for="item in fileName" :key = item.index>
+        <a :href=item.url>{{item.name}}</a><br>
         </label>
 
   <div slot="footer" class="dialog-footer">
@@ -150,7 +150,8 @@ export default {
        file:[],
        dialogFormVisible: false,
        options:[],
-       activity:''
+       activity:'',
+       fileName:[]
     }
   },
    mounted(){
@@ -176,12 +177,20 @@ export default {
       handledocument(index, row){
         this.dialogFormVisible = true
         var that = this
+        that.fileName = [];
        this.$axios.get('/document/preview/'+row.projectId, {
   
      }).then(function (response){
       if (response.data.resultCode === 200) {
           that.file = response.data.data.file
           console.log(response.data.data)
+          for(let item of that.file){
+            that.fileName.push({
+              name:item.slice(33),
+              url:item
+            })
+          }
+          console.log(that.fileName)
       }
      })
       },

@@ -57,7 +57,7 @@
     
     <el-table-column
       label="用户名称"
-      width="200">
+      width="300">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.userName }}</el-tag>
@@ -66,7 +66,7 @@
     </el-table-column>
     <el-table-column
       label="账号"
-      width="180">
+      width="300">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.phone }}</el-tag>
@@ -75,22 +75,14 @@
     </el-table-column>
      <el-table-column
       label="所属单位"
-      width="180">
+      width="300">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.unit }}</el-tag>
           </div>
       </template>
     </el-table-column>
-<el-table-column
-      label="编号"
-      width="250">
-      <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium">{{ scope.row.userId }}</el-tag>
-          </div>
-      </template>
-    </el-table-column>
+
     <el-table-column label="操作">
       <template slot-scope="scope">
         <el-button

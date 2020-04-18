@@ -85,7 +85,7 @@
   <el-form :model="form1">
      <el-checkbox-group v-model="list" >
         <label id="checkbox" v-for="item in user" :key = item.userId>
-    <el-checkbox :label=item.userId >{{item.userName}}</el-checkbox>
+    <el-checkbox :label=item.userId >{{item.userName}}|单位：{{item.unit}}</el-checkbox>
   </label>
 
   </el-checkbox-group>

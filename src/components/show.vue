@@ -54,17 +54,28 @@
           
           <div id="box">
                
-      <el-select id="sell" v-model="activity" placeholder="活动名称">
+      <el-select id="sell" v-model="activity" placeholder="活动名称" >
     <el-option
     
       v-for="item in options"
       :key="item.value"
       :label="item.name"
       :value="item.activityId"
+     
      >
     </el-option>
-  </el-select>   
-  <el-input id="find" v-model="project" placeholder="项目名称"></el-input>  
+  </el-select> 
+  <el-select id="sell" v-model="project" placeholder="项目名称" @focus="selectPro">  
+   <el-option
+    
+      v-for="item in newOptions"
+      :key="item.value"
+      :label="item.name"
+      :value="item.projectId"
+       
+     >
+    </el-option>
+    </el-select> 
 <el-button id="findBtn"  type="primary" plain @click="show">确定</el-button>  
 
    </div>
@@ -101,7 +112,7 @@
     </el-table-column>
      <el-table-column
       label="统计方式"
-      width="250">
+      width="400">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.type }}</el-tag>
@@ -126,6 +137,7 @@ export default {
        activityId:"",
        activity:"",
        options:[],
+       newOptions:[],
        project:'',
        score:0,
        projectId:'',
@@ -135,16 +147,23 @@ export default {
     this.select()
   },
   methods: {
+  
         show(){
+          this.score = '';
           console.log(this.activity)
           var that = this;
-           that.$axios.get(`/project/getId/${that.activity}/${that.project}`, {   
-     }).then(function (response){
-       that.projectId = response.data.data;
+          if(that.project === ''){
+            that.$message({
+            message: '未选择需要查询的值！',
+            type: 'error',
+            duration: 2000
+          })
+          return;
+          }
        that.$axios({
          url:'/scoreList',
          method:'post',
-         data:{"projectId" :response.data.data}
+         data:{"projectId" :that.project}
      }).then(function (response){
        if (response.data.resultCode === 200) {
          that.tableData = response.data.data;
@@ -240,8 +259,24 @@ export default {
       }
  
      })       
-     })
         },
+      
+ selectPro(){
+      console.log(this.project)
+      var that = this; 
+      that.project = '';
+      if(that.newOptions != []){
+       that.$axios({
+       data:{"activityId" : that.activity},
+       method:"post",
+       url:'/pro'
+       }).then(function (response){
+       that.newOptions = response.data.data;
+       console.log(that.newOptions)
+ 
+       })
+      }
+    },
         select(){
         var that = this;
         this.$axios.get('/activity', {
@@ -251,7 +286,6 @@ export default {
         console.log(that.options)
       if (response.data.resultCode === 200) {
          that.options = response.data.data;
-       console.log(that.options)
       }
      })
       },
@@ -340,7 +374,8 @@ export default {
 }
 #findBtn{
  height: 50%;
- margin-right:40%; 
+ margin-right:40%;
+ margin-left:1rem;
  margin-top:1rem; 
 }
 #box{

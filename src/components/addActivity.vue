@@ -89,7 +89,7 @@
       >
       <el-button slot="trigger" size="small" type="primary" icon="el-icon-document">选取文件</el-button>
      
-      <div slot="tip" class="el-upload__tip">只能上传<b>一个压缩包</b>文件</div>
+      <div slot="tip" class="el-upload__tip">只能上传<b>一个压缩包(.zip格式)</b>文件</div>
     </el-upload>
 </template>
 
@@ -164,9 +164,14 @@ export default {
     url:'/project ',
   })
   .then(function (response) {
+     let file
     console.log(response);
       if (response.data.resultCode === 200) { 
-      let file = that.$refs.upload.uploadFiles[0].raw;
+        if(that.$refs.upload.uploadFiles[0] != undefined){
+           file = that.$refs.upload.uploadFiles[0].raw;
+        }else{
+           file = ''
+        }   
       console.log(that.docUrl)
       let formData = new FormData();
       formData.append('file', file);
@@ -218,6 +223,7 @@ export default {
         }
   })
   .catch(function (error) {
+     that.fullscreenLoading = false;
     console.log(error);
   }); 
     } ,
