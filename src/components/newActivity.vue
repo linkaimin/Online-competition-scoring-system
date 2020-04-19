@@ -248,6 +248,9 @@ export default {
     } ,
    add: function () {
       var that = this;
+       console.log(that.FormArr[0].lname)
+      if(that.name!=''&&that.info!=''&&that.value1!=''&&that.value2!=''&&that.unit!=''&&!(JSON.stringify(that.list) === '[]')&&that.tag.length != 0&&that.FormArr[0].part != ''&&that.FormArr[0].lname!= undefined){
+      
       
              this.$axios({
       data:{
@@ -272,7 +275,7 @@ export default {
             type: 'success',
             duration: 2000
           })
-
+ that.$router.push('/manage')
         } else {
           that.$message({
             message: '失败，可能是网络故障',
@@ -284,7 +287,14 @@ export default {
   .catch(function (error) {
     console.log(error);
   });
+    }else{
+       that.$message({
+            message: '有还未填的信息！无法提交！',
+            type: 'error',
+            duration: 2000
+          })
     }  
+    }
     },
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);

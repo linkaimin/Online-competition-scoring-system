@@ -151,6 +151,7 @@ export default {
         up: function () {
            this.fullscreenLoading = true;
       var that = this;
+      if(that.activity!=''&&that.info!=''&&that.unit!=''&&that.leader!=''&&that.name!=''){
         that.$axios({
   data:{"activityId" : that.activity,
 	"info" : that.info,
@@ -184,6 +185,7 @@ export default {
             type: 'success',
             duration: 2000
           })
+           that.$router.push('/manageActivity')
         }).catch(() => {
            that.fullscreenLoading = false;
       });
@@ -226,6 +228,14 @@ export default {
      that.fullscreenLoading = false;
     console.log(error);
   }); 
+      }else{
+        that.fullscreenLoading = false;
+        that.$message({
+            message: '该项目信息未填全！',
+            type: 'error',
+            duration: 2000
+          })
+      }
     } ,
  exit: function () {
       var that = this;

@@ -65,15 +65,21 @@
           </div> 
       </template>
     </el-table-column>
-    <el-table-column
+   
+      <el-table-column
       label="相关信息"
       width="180">
+ 
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
+            <el-tooltip effect="light" :content=scope.row.info placement="left-start">
             <el-tag size="medium">{{ scope.row.info }}</el-tag>
+           </el-tooltip> 
           </div>
       </template>
+       
     </el-table-column>
+   
      <el-table-column
       label="所属单位"
       width="180">

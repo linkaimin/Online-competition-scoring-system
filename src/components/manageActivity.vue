@@ -128,7 +128,7 @@
         <el-dialog title="查看文件" :visible.sync="dialogFormVisible">
 
         <label id="checkbox" v-for="item in fileName" :key = item.index>
-        <a :href=item.url>{{item.name}}</a><br>
+        <a :href=item.url target="_blank">{{item.name}}</a><br>
         </label>
 
   <div slot="footer" class="dialog-footer">
@@ -151,7 +151,8 @@ export default {
        dialogFormVisible: false,
        options:[],
        activity:'',
-       fileName:[]
+       fileName:[],
+       NewtableData:[],
     }
   },
    mounted(){
@@ -159,7 +160,16 @@ export default {
   },
   methods: {
     handleExcel(index, row){
+      var that = this
+      if(row.button === true){ 
     window.open(`http://140.143.194.109:8080/jwc/excel/project-total/export/${row.projectId}`)
+    }else{
+       that.$message({
+            message: '该项目还没有让全部专家评分！',
+            type: 'error',
+            duration: 2000
+          })
+    }
     },
           select1(){
         var that = this;
@@ -203,13 +213,30 @@ export default {
         data:{
         "activityId" : that.activityId
       },
+  })
+  .then(function (response) {    
+    that.NewtableData = response.data.data;
+    for(let i of that.NewtableData){
+   
+       that.$axios({
+       url:"/scoreOver",
+       method:"post",
+        data:{
+        "projectId" : i.projectId
+      },
 
   })
   .then(function (response) {
-    console.log(response.data);
-     console.log(response.data.data);
-    that.tableData = response.data.data;
+    if (response.data.resultCode === 200) {
+      i.button = response.data.data;
+    }
+  })
+
+  that.tableData = that.NewtableData
+    }
+  console.log(that.tableData)
       })
+
    },
        handleEdit(index, row) {
          console.log(row)
