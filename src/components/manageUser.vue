@@ -57,8 +57,15 @@
     
     <el-table-column
       label="用户名称"
-      width="300">
+      width="200">
       <template slot-scope="scope">
+         <el-dialog title="修改密码" :visible.sync="dialogFormVisible">
+  新密码： <el-input v-model="scope.row.pw"></el-input>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handlePassword(scope.row)">确 定</el-button>
+  </div>
+</el-dialog>
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.userName }}</el-tag>
           </div> 
@@ -85,6 +92,9 @@
 
     <el-table-column label="操作">
       <template slot-scope="scope">
+         <el-button
+          size="mini"
+          @click="dialogFormVisible = true">修改密码</el-button>
         <el-button
           size="mini"
           @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
@@ -107,14 +117,49 @@ export default {
   data(){
     return{
        tableData: [],
-       find:""
+       find:"",
+       dialogFormVisible:false
     }
   },
   mounted(){
   this.select()
   },
   methods: {
-
+    handlePassword(row){
+      this.dialogFormVisible = false
+     var that = this;
+     if(row.pw == undefined){
+        that.$message({
+            message: '密码未填写！',
+            type: 'error',
+            duration: 2000
+          })
+     }else{
+     that.$axios({
+       method:"put",
+       url:"/updatePassword",
+       data:{
+         "phone" : row.phone,
+         "password": row.pw,
+          }
+     }).then(function (response){
+       console.log(response);
+      if (response.data.resultCode === 200) {
+          that.$message({
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+      }else{
+         that.$message({
+            message: '修改失败',
+            type: 'error',
+            duration: 2000
+          })
+      }
+     })
+     }
+    },
       select(){
      var that = this;
      this.$axios({
