@@ -94,140 +94,240 @@
 
 <script>
 export default {
-  data(){
-    return{
-     name:"",
-      leader:"",
-      unit:"",
-      info:"",
-      activity:"",
-      fileList: [],
-      url:"",
-      options:[],
-      projectUrl:'',
-      upData:{},
-      activityId:"",
-      fullscreenLoading: false,
-      num:1,
-      docUrl:""
-    }
+data(){
+  return{
+    name:"",
+    leader:"",
+    unit:"",
+    info:"",
+    activity:"",
+    fileList: [],
+    url:"",
+    options:[],
+    projectUrl:'',
+    upData:{},
+    activityId:"",
+    fullscreenLoading: false,
+    num:1,
+    docUrl:""
+  }
+},
+mounted(){
+    this.text()
+},
+methods: {
+  text(){
+    var data = this.$route.query.ruleForm;
+    this.name = data.name;
+    this.leader = data.leader;
+    this.unit = data.unit;
+    this.info = data.info;
+    this.activityId = data.activityId;
+    this.projectId = data.projectId
+    this.docUrl = data.docUrl
+    this.url ="http://39.97.112.80:8080/jwc/document/upload/"+this.projectId;
   },
-  mounted(){
-     this.text()
+  handleRemove(file, fileList) {
+    console.log(file, fileList);
   },
-  methods: {
-      text(){
-     var data = this.$route.query.ruleForm;
-      this.name = data.name;
-      this.leader = data.leader;
-      this.unit = data.unit;
-      this.info = data.info;
-      this.activityId = data.activityId;
-      this.projectId = data.projectId
-      this.docUrl = data.docUrl
-      this.url ="http://39.97.112.80:8080/jwc/document/upload/"+this.projectId;
-      },
+  handlePreview(file) {
+    console.log(file);
+  },
+  up: function () {
+    var that = this;
+    if(that.activityId!='' &&that.unit!=''&&that.leader!=''&&that.name!=''){
 
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-       up: function () {
-      var that = this;
-        that.$axios({
-  data:{"activityId" : that.activityId,
-	"info" : that.info,
-	"unit" : that.unit,
-	"leader" : that.leader,
-  "score"  : 0,
-  "name" : that.name,
-  "projectId" : that.projectId,
-  },
-    method:'PUT',
-    url:'/project ',
-  })
-  .then(function (response) {
-    that.fullscreenLoading = true;
-    let file
-    console.log(response);
-      if (response.data.resultCode === 200) { 
-         console.log(that.$refs.upload.uploadFiles[0])
-         if(that.$refs.upload.uploadFiles[0] == undefined){
+      let file
+
+      console.log(that.$refs.upload.uploadFiles[0])
+      if(that.$refs.upload.uploadFiles[0] == undefined){
         file = []
-        }else{
+      } else {
         file = that.$refs.upload.uploadFiles[0].raw;
-        }
-      
-      let formData = new FormData();
-      formData.append('file', file);
-      formData.append("document", new Blob([JSON.stringify({"projectId": that.projectId, "docUrl": that.docUrl})], {type: "application/json"}));
-      that.$axios.put(`/document/update`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
-        .then(response => {
-           that.fullscreenLoading = false;
-            if (response.data.resultCode === 200) { 
-  that.$message({
-            message: '增加成功',
-            type: 'success',
-            duration: 2000
-          })
-            }else{
-            that.$message({
-            message: '增加失败，可能是网络问题！',
-            type: 'error',
-            duration: 2000
-          })
-            }
-        }).catch(() => {
-           that.fullscreenLoading = false;
-      });
+      }
 
-        // async function test1() {
-        //     await test2();
-        //     that.submitUpload();     
-      
-        // }
-        // async function test2() {
+      // 有文件
+      if (that.$refs.upload.uploadFiles[0] != undefined) {
+          console.log("有文件")
+          console.log("文件名 ：" + file.name)
+          var fileName = file.name
+          var suffix1 = '';
+          var suffix = '';
           
-        //      that.upData = {document:{
-        //        projectId:that.activityId,
-        //        docUrl:that.projectUrl
-        //      }}
-        //      that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
-        // }
-        // test1();
-          // function* fun(){
-          // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
-          // yield '1';
-          // that.submitUpload();
-          // yield '2'; 
-          // }
-          // var f = fun();
-          // f.next();
-          // f.next(); 
+          try {
+              var flieArr = fileName.split('.');
+              suffix1 = flieArr[flieArr.length - 1];
+              suffix = suffix1.toLowerCase();
+              console.log("文件后缀名 ：" + suffix)
+          } catch (err) {
+            suffix = '';
+            console.log("error : 获取文件后缀名出现异常 ：" + suffix + " , err = " + err)
+          }
 
-          // setTimeout(function(){  that.submitUpload(); }, 300);
-        } else {
-           that.fullscreenLoading = false;
-          that.$message({
-            message: '添加失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
-        }
-  })
-  .catch(function (error) {
-    console.log(error);
-  }); 
-    } ,
- exit: function () {
-      var that = this;
-             this.$axios.get('/logout', {
+          var result = '';
+          // 只能上传一个文件或者一个zip压缩包
+          var flist = ['zip','png', 'jpg', 'jpeg', 'bmp', 'gif', 'tif', 'pcx','tga','exif','fpx','svg','psd','cdr','pcd','dxf','ufo','eps','ai','raw','wmf','webp', 'doc','docx','ppt','pptx','xlsx','xls','pdf','mp4'];
+          result = flist.some(function (item) {
+            return item == suffix;
+          });
 
-  })
-  .then(function (response) {
-    console.log(response);
+          console.log(result)
+          
+          // 文件合法，就执行上传文件操作。
+          if (result) {
+            that.$axios({
+              data:{
+                "activityId" : that.activityId,
+                "info" : that.info,
+                "unit" : that.unit,
+                "leader" : that.leader,
+                "score"  : 0,
+                "name" : that.name,
+                "projectId" : that.projectId,
+                },
+                method:'PUT',
+                url:'/project ',
+            })
+            .then(function (response) {
+              that.fullscreenLoading = true;
+              let file
+              console.log(response);
+              if (response.data.resultCode === 200) { 
+                console.log(that.$refs.upload.uploadFiles[0])
+                if(that.$refs.upload.uploadFiles[0] == undefined){
+                  file = []
+                } else {
+                  file = that.$refs.upload.uploadFiles[0].raw;
+                }
+                console.log(file.length)
+
+                let formData = new FormData();
+                formData.append('file', file);
+                formData.append("document", new Blob([JSON.stringify({"projectId": that.projectId, "docUrl": that.docUrl})], {type: "application/json"}));
+                that.$axios.put(`/document/update`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                  .then(response => {
+                      that.fullscreenLoading = false;
+                      if (response.data.resultCode === 200) {
+                        that.$message({
+                          message: '更新成功',
+                          type: 'success',
+                          duration: 2000
+                        })
+                      } else {
+                        that.$message({
+                          message: '更新失败，可能是网络问题！',
+                          type: 'error',
+                          duration: 2000
+                        })
+                      }
+                  })
+                  .catch(() => {
+                      that.fullscreenLoading = false;
+                  });
+              } else {
+                  that.fullscreenLoading = false;
+                  that.$message({
+                    message: '更新失败，可能是网络故障',
+                    type: 'error',
+                    duration: 2000
+                  })
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+
+          } else {
+            // 文件非法，提示错误。不执行操作。
+            that.fullscreenLoading = false;
+            that.$message({
+              message: '更新失败，文件不符合规定格式，请重新选择文件！',
+              type: 'error',
+              duration: 2000
+            })
+          }
+      } else {
+        console.log("无文件")
+        // 无文件
+        that.$axios({
+          data:{
+            "activityId" : that.activityId,
+            "info" : that.info,
+            "unit" : that.unit,
+            "leader" : that.leader,
+            "score"  : 0,
+            "name" : that.name,
+            "projectId" : that.projectId,
+            },
+            method:'PUT',
+            url:'/project ',
+        })
+        .then(function (response) {
+          that.fullscreenLoading = true;
+          let file
+          console.log(response);
+          if (response.data.resultCode === 200) { 
+            console.log(that.$refs.upload.uploadFiles[0])
+            if(that.$refs.upload.uploadFiles[0] == undefined){
+              file = []
+            } else {
+              file = that.$refs.upload.uploadFiles[0].raw;
+            }
+
+            let formData = new FormData();
+            formData.append('file', file);
+            formData.append("document", new Blob([JSON.stringify({"projectId": that.projectId, "docUrl": that.docUrl})], {type: "application/json"}));
+            that.$axios.put(`/document/update`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+              .then(response => {
+                  that.fullscreenLoading = false;
+                  if (response.data.resultCode === 200) {
+                    that.$message({
+                      message: '更新成功',
+                      type: 'success',
+                      duration: 2000
+                    })
+                  } else {
+                    that.$message({
+                      message: '更新失败，可能是网络问题！',
+                      type: 'error',
+                      duration: 2000
+                    })
+                  }
+              })
+              .catch(() => {
+                  that.fullscreenLoading = false;
+              });
+          } else {
+              that.fullscreenLoading = false;
+              that.$message({
+                message: '更新失败，可能是网络故障',
+                type: 'error',
+                duration: 2000
+              })
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      } 
+
+    } else {
+      that.fullscreenLoading = false;
+      that.$message({
+          message: '该项目信息未填全！',
+          type: 'error',
+          duration: 2000
+      })
+    }
+
+  } ,
+
+  exit: function () {
+    var that = this;
+    this.$axios.get('/logout', {})
+    .then(function (response) {
+      console.log(response);
       if (response.data.resultCode === 200) {
         sessionStorage.clear()
         that.$message({
@@ -236,20 +336,22 @@ export default {
             duration: 2000
           })
           that.$router.push('/')
-       
+        
         } else {
           that.$router.push('/')
         }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-    } 
-    },
-    handleClose(tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-    },
-  }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  } 
+},
+
+  handleClose(tag) {
+    this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+  },
+
+}
   
 
 </script>

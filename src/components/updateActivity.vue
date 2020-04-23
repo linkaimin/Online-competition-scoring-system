@@ -269,6 +269,10 @@ var that = this;
     } ,
    add: function () {
       var that = this;
+      console.log("that.value1 = " + that.value1);
+ console.log("that.value2 = " + that.value2);
+if(that.name!=''&& that.value1!='' && that.value1!=null &&that.value2!='' && that.value2 != null &&that.unit!=''&&!(JSON.stringify(that.list) === '[]')&&that.tag.length != 0&&that.FormArr[0].part != ''&&that.FormArr[0].lname!= undefined){
+
              this.$axios({
       data:{
         "name" : that.name,
@@ -294,7 +298,8 @@ var that = this;
             type: 'success',
             duration: 2000
           })
-
+      that.$router.push('/manage')
+      
         } else {
           that.$message({
             message: '失败，可能是网络故障',
@@ -306,6 +311,13 @@ var that = this;
   .catch(function (error) {
     console.log(error);
   });
+  }else{
+       that.$message({
+            message: '有还未填的信息！无法提交！',
+            type: 'error',
+            duration: 2000
+          })
+    } 
     }  
     },
     handleClose(tag) {

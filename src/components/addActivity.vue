@@ -93,13 +93,14 @@
     </el-upload>
 </template>
 
-              <div id='btn'>
-               <el-button id="button" v-loading.fullscreen.lock="fullscreenLoading" @click="up"  type="primary" plain>确定</el-button>
-               </div>
-            </el-card>
-      </el-container>
-    </el-container>
-  </div>
+<div id='btn'>
+  <el-button id="button" v-loading.fullscreen.lock="fullscreenLoading" @click="up"  type="primary" plain>
+  确定</el-button>
+</div>
+</el-card>
+</el-container>
+</el-container>
+</div>
 </template>
 
 <script>
@@ -125,122 +126,192 @@ export default {
     this.select()
   },
   methods: {
-      select(){
+    select(){
         var that = this;
         this.$axios.get('/activity', {
-     })
-     .then(function (response){
-       console.log(response);
+      })
+      .then(function (response){
+        console.log(response);
         console.log(that.options)
-      if (response.data.resultCode === 200) {
-         that.options = response.data.data;
-       console.log(that.options)
-      }
-     })
-      },
-          submitUpload() {
-        this.$refs.upload.submit();
-         
-      },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-        up: function () {
-           this.fullscreenLoading = true;
-      var that = this;
-      if(that.activity!=''&&that.info!=''&&that.unit!=''&&that.leader!=''&&that.name!=''){
-        that.$axios({
-  data:{"activityId" : that.activity,
-	"info" : that.info,
-	"unit" : that.unit,
-	"leader" : that.leader,
-  "score"  : 0,
-  "name" : that.name,
- 
-  },
-    method:'post',
-    url:'/project ',
-  })
-  .then(function (response) {
-     let file
-    console.log(response);
-      if (response.data.resultCode === 200) { 
-        if(that.$refs.upload.uploadFiles[0] != undefined){
-           file = that.$refs.upload.uploadFiles[0].raw;
-        }else{
-           file = ''
-        }   
-      console.log(that.docUrl)
-      let formData = new FormData();
-      formData.append('file', file);
-      formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
-      that.$axios.post(`/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
-        .then(response => {
-           that.fullscreenLoading = false;
-  that.$message({
-            message: '增加成功',
-            type: 'success',
-            duration: 2000
-          })
-           that.$router.push('/manageActivity')
-        }).catch(() => {
-           that.fullscreenLoading = false;
-      });
-
-        // async function test1() {
-        //     await test2();
-        //     that.submitUpload();     
-      
-        // }
-        // async function test2() {
-          
-        //      that.upData = {document:{
-        //        projectId:that.activityId,
-        //        docUrl:that.projectUrl
-        //      }}
-        //      that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
-        // }
-        // test1();
-          // function* fun(){
-          // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
-          // yield '1';
-          // that.submitUpload();
-          // yield '2'; 
-          // }
-          // var f = fun();
-          // f.next();
-          // f.next(); 
-
-          // setTimeout(function(){  that.submitUpload(); }, 300);
-        } else {
-           that.fullscreenLoading = false;
-          that.$message({
-            message: '添加失败，可能是网络故障',
-            type: 'error',
-            duration: 2000
-          })
+        if (response.data.resultCode === 200) {
+            that.options = response.data.data;
+            console.log(that.options)
         }
-  })
-  .catch(function (error) {
-     that.fullscreenLoading = false;
-    console.log(error);
-  }); 
-      }else{
+      })
+    },
+    submitUpload() {
+      this.$refs.upload.submit();  
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    up: function () {
+      this.fullscreenLoading = true;
+      var that = this;
+      if(that.activity!='' &&that.unit!=''&&that.leader!=''&&that.name!=''){
+          that.$axios({
+            data:{
+              "activityId" : that.activity,
+              "info" : that.info,
+              "unit" : that.unit,
+              "leader" : that.leader,
+              "score"  : 0,
+              "name" : that.name,
+            },
+              method:'post',
+              url:'/project',
+          })
+          .then(function (response) {
+            let file
+            console.log(response);
+
+            // 第一个成功，就执行传文件
+            if (response.data.resultCode === 200) { 
+              if(that.$refs.upload.uploadFiles[0] != undefined){
+                file = that.$refs.upload.uploadFiles[0].raw;
+              }else{
+                file = ''
+              }
+
+              // 文件不空，需要执行上传文件，并且判断文件格式
+              if (file != '') {
+                  console.log("文件名 ：" + file.name)
+                  var fileName = file.name
+                  var suffix1 = '';
+                  var suffix = '';
+                  
+                  try {
+                      var flieArr = fileName.split('.');
+                      suffix1 = flieArr[flieArr.length - 1];
+                      suffix = suffix1.toLowerCase();
+                      console.log("文件后缀名 ：" + suffix)
+                  } catch (err) {
+                    suffix = '';
+                    console.log("error : 获取文件后缀名出现异常 ：" + suffix + " , err = " + err)
+                  }
+
+                  var result = '';
+                  // 只能上传一个文件或者一个zip压缩包
+                  var flist = ['zip','png', 'jpg', 'jpeg', 'bmp', 'gif', 'tif', 'pcx','tga','exif','fpx','svg','psd','cdr','pcd','dxf','ufo','eps','ai','raw','wmf','webp', 'doc','docx','ppt','pptx','xlsx','xls','pdf','mp4'];
+                  result = flist.some(function (item) {
+                    return item == suffix;
+                  });
+
+                  console.log(result)
+                  
+                  // 文件合法，就执行上传文件操作。
+                  if (result) {
+                    console.log(that.docUrl)
+                    let formData = new FormData();
+                    formData.append('file', file);
+                    formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
+                    that.$axios.post(`/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                      .then(response => {
+                        that.fullscreenLoading = false;
+                        that.$message({
+                          message: '增加成功',
+                          type: 'success',
+                          duration: 2000
+                        })
+                        that.$router.push('/manageActivity')
+                      }).catch(() => {
+                        that.fullscreenLoading = false;
+                    });
+                  } else {
+                    // 文件不合法，就需要删除掉上面已经成功新建的项目，并提示失败。
+                      that.fullscreenLoading = false;
+                      that.$axios({
+                        data:{
+                          "projectId" : response.data.data,
+                          "activityId" : that.activity
+                        },
+                        method:"delete",
+                        url:"/project/delete",
+                      })
+                      .then(function (response){
+                          console.log("删除失败项目成功! + code : " + response.data.resultCode);
+                      })
+
+                      that.$message({
+                          message: '添加失败，文件不合法',
+                          type: 'error',
+                          duration: 2000
+                      })
+                  }
+
+              } else {
+                // 文件为空，上传一个空文件。
+                  console.log(that.docUrl)
+                    let formData = new FormData();
+                    formData.append('file', file);
+                    formData.append("document", new Blob([JSON.stringify({"projectId": response.data.data, "docUrl": that.docUrl})], {type: "application/json"}));
+                    that.$axios.post(`/document/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                      .then(response => {
+                        that.fullscreenLoading = false;
+                        that.$message({
+                          message: '增加成功',
+                          type: 'success',
+                          duration: 2000
+                        })
+                        that.$router.push('/manageActivity')
+                      }).catch(() => {
+                        that.fullscreenLoading = false;
+                    });
+                }
+            // async function test1() {
+            //     await test2();
+            //     that.submitUpload();     
+          
+            // }
+            // async function test2() {
+              
+            //      that.upData = {document:{
+            //        projectId:that.activityId,
+            //        docUrl:that.projectUrl
+            //      }}
+            //      that.url ="http://39.97.112.80:8080/jwc/document/upload/"+response.data.data;
+            // }
+            // test1();
+              // function* fun(){
+              // that.url ="http://39.97.112.80:8080/jwc/"+response.data.data;
+              // yield '1';
+              // that.submitUpload();
+              // yield '2'; 
+              // }
+              // var f = fun();
+              // f.next();
+              // f.next(); 
+              // setTimeout(function(){  that.submitUpload(); }, 300);
+            } else {
+              // 第一个新建项目失败，返回失败。
+
+              that.fullscreenLoading = false;
+              that.$message({
+                message: '添加失败，可能是网络故障',
+                type: 'error',
+                duration: 2000
+              })
+            }
+      })
+      .catch(function (error) {
+        that.fullscreenLoading = false;
+        console.log(error);
+      }); 
+    }else{
         that.fullscreenLoading = false;
         that.$message({
             message: '该项目信息未填全！',
             type: 'error',
             duration: 2000
-          })
-      }
-    } ,
+        })
+    }
+  } ,
  exit: function () {
       var that = this;
              this.$axios.get('/logout', {
-
   })
   .then(function (response) {
     console.log(response);

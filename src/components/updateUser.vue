@@ -58,9 +58,9 @@
               
                所属单位：<el-input class="activity" v-model="unit" placeholder="请输入内容"></el-input>
               </div><div class="item" >
-               <div class="item">
+               <!--<div class="item">
               用户账号：<el-input class="activity" v-model="phone" placeholder="请输入内容"></el-input>
-               </div>
+               </div>-->
 
             </div>
              
@@ -82,7 +82,7 @@ export default {
       unit:"",
       value1: '',
       value2: '',
-      phone:"",
+      //phone:"",
       userId:""
     }
   },
@@ -94,7 +94,7 @@ export default {
         var data = this.$route.query.ruleForm;
         this.userName = data.userName;
         this.unit = data.unit;
-        this.phone = data.phone;
+        //this.phone = data.phone;
         this.activity = data.activity;
         this.userId = data.userId;
         console.log(data.userId)
@@ -125,12 +125,13 @@ export default {
     } ,
    add: function () {
       var that = this;
+      if (that.name!='' && that.unit != '') {  
              this.$axios({
       data:{
          'userId' : that.userId,
         'userName' : that.userName,
         'unit' : that.unit,
-        'phone' : that.phone,
+       // 'phone' : that.phone,
        'activity' : that.activity,
       },
       method:"put",
@@ -157,6 +158,14 @@ export default {
   .catch(function (error) {
     console.log(error);
   });
+  }else{
+       that.$message({
+            message: '有还未填的信息！无法提交！',
+            type: 'error',
+            duration: 2000
+          })
+    }
+
     }  
     },
     handleClose(tag) {

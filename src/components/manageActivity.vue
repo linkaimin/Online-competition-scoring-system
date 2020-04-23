@@ -200,6 +200,13 @@ export default {
               url:item
             })
           }
+          if (response.data.data.url != null && response.data.data.url != '') {
+              that.fileName.push({
+                name : "网络文件 : " + response.data.data.url,
+                url : response.data.data.url
+              })
+          }
+          
           console.log(that.fileName)
       }
      })

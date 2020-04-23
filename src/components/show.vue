@@ -129,7 +129,16 @@
     </el-table-column>
   
   </el-table>
-  <h2 id="lastScore">最终得分：{{score}}</h2>
+  <el-dialog title="预览文件"  :visible.sync="dialogFormVisible">
+
+      
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
+  <h2 id="lastScore" v-show=tag>最终得分：{{score}}</h2><h2 id="lastScore" v-show=!tag>（有评委未评分时无法展示最终结果）</h2>
+  <el-button id="lastScore" v-show=tag @click="yulan">预览总评结果</el-button>
   </div>
       </el-container>
     </el-container>
@@ -137,6 +146,8 @@
 </template>
 
 <script>
+import XLSX from 'xlsx'
+
 export default {
 
   data(){
@@ -150,12 +161,48 @@ export default {
        project:'',
        score:0,
        projectId:'',
+       tag:false,
+       dialogFormVisible:false,
     }
   },
     mounted(){
     this.select()
   },
   methods: {
+        yulan(){
+          var that = this;
+          that.dialogFormVisible = true;
+            var vm = this;
+            this.$axios.get(`/excel/preview/${that.project}`,{  
+                responseType: 'blob'
+            })
+            .then((response) => {
+                console.log(response)
+                var reader = new FileReader();  
+                reader.onload = e => {  
+                    //预处理  
+                    var binary = '';  
+                    var buf = new Uint8Array(e.target.result);  
+                    var length = buf.byteLength;  
+                    for (var i = 0; i < length; i++) {  
+                    binary += String.fromCharCode(buf[i]);  
+                    }  //读取excel  
+                    const wb = XLSX.read(binary, {type: "binary"});  
+                    console.log("wb",wb);  
+                    //抓取第一个sheet
+                    let wsname = wb.SheetNames[0];  
+                    let ws = wb.Sheets[wsname];
+                    
+                    // 用来赋值 this.fileContent = XLSX.utils.sheet_to_html(ws);
+                    this.fileContent = XLSX.utils.sheet_to_html(ws);
+                };
+                reader.readAsArrayBuffer(response.data);  
+            }) 
+            .catch(error => {  
+                console.log(error);  
+            });
+        return this.fileContent;  
+        },
         handleEdit(index,row){
           window.open(`http://140.143.194.109:8080/jwc/excel/project/export/`+row.projectId+'/'+row.userId)
         },
@@ -189,6 +236,20 @@ export default {
          }
       console.log(that.tableData)
       }
+      if(1){
+          that.$axios({
+          method:'post',
+          url:"/scoreOver",
+          data:{
+            projectId:that.project,
+          }
+        }).then(function (response){
+           if (response.data.resultCode === 200) {
+            that.tag = response.data.data;
+        }
+        })
+        console.log(that.tag)
+      }
       let temp = 0;
       if(that.tableData[0].type === 1){
         for(let i of that.tableData){
@@ -199,7 +260,7 @@ export default {
           method:'put',
           url:"/project",
           data:{
-            projectId:that.projectId,
+            projectId:that.project,
             score:that.score
           }
         }).then(function (response){
@@ -217,7 +278,7 @@ export default {
           method:'put',
           url:"/project",
           data:{
-            projectId:that.projectId,
+            projectId:that.project,
             score:that.score
           }
         }).then(function (response){
@@ -232,7 +293,7 @@ export default {
           method:'post',
           url:"/calculate",
           data:{
-            projectId:that.projectId
+            projectId:that.project
           }
         }).then(function (response){
            if (response.data.resultCode === 200) {
@@ -259,7 +320,7 @@ export default {
           method:'put',
           url:"/project",
           data:{
-            projectId:that.projectId,
+            projectId:that.project,
             score:that.score
           }
         }).then(function (response){

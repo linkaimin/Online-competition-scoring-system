@@ -58,7 +58,11 @@
                </div><div class="item">
                账号：<el-input class="nu" v-model="phone" placeholder="请输入内容"></el-input>
               </div><div class="item">
-                密码：<el-input class="nu" v-model="password" placeholder="请输入内容"></el-input>
+                密码：<el-input class="nu" v-model="password" placeholder="请输入内容" type="password"
+></el-input>
+</div><div class="item">
+                确认密码：<el-input class="nu" v-model="password0" placeholder="请输入内容" type="password"></el-input>
+
               </div><div class="item">
                单位：<el-input class="nu" v-model="unit" placeholder="请输入内容"></el-input>
               </div>
@@ -78,7 +82,8 @@ export default {
       name:"",
       phone:"",
       unit:"",
-      password:""
+      password:"",
+      password0:""
     }
   },
   mounted(){
@@ -110,7 +115,15 @@ export default {
   });
     } ,
      add:function(){     
-       var that = this;  
+       var that = this;
+       if (this.password != this.password0) {
+            that.$message({
+             message: "两次密码输入不一致！请重试",
+            type: 'error',
+            duration: 2000
+          })
+       } else {
+       if (that.name!='' && that.phone!='' && that.unit != '' && that.password !='') {  
       this.$axios({
       data: {
         unit:this.unit,
@@ -144,6 +157,14 @@ export default {
   .catch(function (error) {
     console.log(error);
   });
+    }else{
+       that.$message({
+            message: '有还未填的信息！无法提交！',
+            type: 'error',
+            duration: 2000
+          })
+    }
+       }
    }
     },
     handleClose(tag) {

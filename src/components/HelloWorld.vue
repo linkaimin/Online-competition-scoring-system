@@ -57,7 +57,7 @@ export default {
             duration: 2000
           })
           
-           that.$router.push({ path:'index'})
+           that.$router.push({ path:'/index'})
        
         } else {
           that.$message({
