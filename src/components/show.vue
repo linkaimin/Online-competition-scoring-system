@@ -130,8 +130,7 @@
   
   </el-table>
   <el-dialog title="预览文件"  :visible.sync="dialogFormVisible">
-
-      
+     <div v-html=fileContent></div>
   <div slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
     <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
@@ -163,6 +162,7 @@ export default {
        projectId:'',
        tag:false,
        dialogFormVisible:false,
+       fileContent:""
     }
   },
     mounted(){
@@ -201,7 +201,7 @@ export default {
             .catch(error => {  
                 console.log(error);  
             });
-        return this.fileContent;  
+        return that.fileContent;  
         },
         handleEdit(index,row){
           window.open(`http://140.143.194.109:8080/jwc/excel/project/export/`+row.projectId+'/'+row.userId)
