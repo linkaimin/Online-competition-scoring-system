@@ -212,7 +212,14 @@ export default {
        console.log(response.data.data)
       }
      })
+          }else{
+          that.$message({
+            message: '删除失败！可能是网络问题',
+            type: 'error',
+            duration: 2000
+          })
           }
+
         })
       },
  exit: function () {

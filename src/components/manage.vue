@@ -61,7 +61,9 @@
       width="200">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
+            <el-tooltip effect="light" :content=scope.row.name placement="left-start">
             <el-tag size="medium">{{ scope.row.name }}</el-tag>
+           </el-tooltip> 
           </div> 
       </template>
     </el-table-column>
@@ -231,6 +233,12 @@ export default {
       
       }
      })
+           }else{
+          that.$message({
+            message: '删除失败！可能是网络问题',
+            type: 'error',
+            duration: 2000
+          })
           }
         })
       },

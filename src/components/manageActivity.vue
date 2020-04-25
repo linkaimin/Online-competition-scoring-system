@@ -81,7 +81,9 @@
       width="180">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
+             <el-tooltip effect="light" :content=scope.row.name placement="left-start">
             <el-tag size="medium">{{ scope.row.name }}</el-tag>
+           </el-tooltip> 
           </div> 
       </template>
     </el-table-column>
@@ -187,20 +189,24 @@ export default {
       handledocument(index, row){
         this.dialogFormVisible = true
         var that = this
-        that.fileName = [];
+        that.fileName = [{name:'该项目没有文件！'}];
        this.$axios.get('/document/preview/'+row.projectId, {
   
      }).then(function (response){
       if (response.data.resultCode === 200) {
           that.file = response.data.data.file
           console.log(response.data.data)
+           if(that.file.length !== 0){
+            that.fileName = []
           for(let item of that.file){
             that.fileName.push({
               name:item.slice(33),
               url:item
             })
           }
+          }
           if (response.data.data.url != null && response.data.data.url != '') {
+               that.fileName = []
               that.fileName.push({
                 name : "网络文件 : " + response.data.data.url,
                 url : response.data.data.url
@@ -280,6 +286,12 @@ export default {
     console.log(response.data.data);
     that.tableData = response.data.data
       })
+          }else{
+          that.$message({
+            message: response.data.message,
+            type: 'error',
+            duration: 2000
+          })
           }
         })
       },

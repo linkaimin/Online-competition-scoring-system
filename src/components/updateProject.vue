@@ -213,7 +213,7 @@ methods: {
                           type: 'success',
                           duration: 2000
                         })
-                         that.$router.push('/manage')
+                         that.$router.push('/manageActivity')
                       } else {
                         that.$message({
                           message: '更新失败，可能是网络问题！',
@@ -287,7 +287,7 @@ methods: {
                       type: 'success',
                       duration: 2000
                     })
-                    that.$router.push('/manage')
+                    that.$router.push('/manageActivity')
                   } else {
                     that.$message({
                       message: '更新失败，可能是网络问题！',

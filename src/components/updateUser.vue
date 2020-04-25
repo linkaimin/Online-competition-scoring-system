@@ -95,7 +95,6 @@ export default {
         this.userName = data.userName;
         this.unit = data.unit;
         //this.phone = data.phone;
-        this.activity = data.activity;
         this.userId = data.userId;
         console.log(data.userId)
       },
@@ -131,8 +130,6 @@ export default {
          'userId' : that.userId,
         'userName' : that.userName,
         'unit' : that.unit,
-       // 'phone' : that.phone,
-       'activity' : that.activity,
       },
       method:"put",
       url:'/updateInfo'
@@ -146,7 +143,7 @@ export default {
             type: 'success',
             duration: 2000
           })
-
+      that.$router.push('/manageUser')
         } else {
           that.$message({
             message: response.data.message,

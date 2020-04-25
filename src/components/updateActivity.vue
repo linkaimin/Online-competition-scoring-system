@@ -269,6 +269,18 @@ var that = this;
     } ,
    add: function () {
       var that = this;
+       var sum = 0;
+    for(let i of that.FormArr){
+     sum += Number(i.part);
+    }
+    if(sum != 1){ 
+       this.$message({
+            message: '评分占比和不为1！请重新填写！',
+            type: 'error',
+            duration: 2000
+          })
+          return;
+    }
       console.log("that.value1 = " + that.value1);
  console.log("that.value2 = " + that.value2);
 if(that.name!=''&& that.value1!='' && that.value1!=null &&that.value2!='' && that.value2 != null &&that.unit!=''&&!(JSON.stringify(that.list) === '[]')&&that.tag.length != 0&&that.FormArr[0].part != ''&&that.FormArr[0].lname!= undefined){
