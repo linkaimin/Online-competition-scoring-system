@@ -60,10 +60,10 @@
       width="200">
       <template slot-scope="scope">
          <el-dialog title="修改密码" :visible.sync="dialogFormVisible">
-  新密码： <el-input v-model="scope.row.pw"></el-input>
+  新密码： <el-input v-model="row.pw"></el-input>
   <div slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handlePassword(scope.row)">确 定</el-button>
+    <el-button type="primary" @click="handlePassword(row)">确 定</el-button>
   </div>
 </el-dialog>
           <div slot="reference" class="name-wrapper">
@@ -94,7 +94,7 @@
       <template slot-scope="scope">
          <el-button
           size="mini"
-          @click="dialogFormVisible = true">修改密码</el-button>
+           @click="handle(scope.$index,scope.row)">修改密码</el-button>
         <el-button
           size="mini"
           @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
@@ -118,14 +118,20 @@ export default {
     return{
        tableData: [],
        find:"",
-       dialogFormVisible:false
+       dialogFormVisible:false,
+       row:{}
     }
   },
   mounted(){
   this.select()
   },
   methods: {
+    handle(index,row){
+      this.dialogFormVisible = true;
+      this.row = row;
+    },
     handlePassword(row){
+      console.log(row)
       this.dialogFormVisible = false
      var that = this;
      if(row.pw == undefined){
