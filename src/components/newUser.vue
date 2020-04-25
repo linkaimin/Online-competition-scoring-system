@@ -145,7 +145,7 @@ export default {
             type: 'success',
             duration: 2000
           })
-       
+       that.$router.push('/manageUser')
         } else {
           that.$message({
              message: response.data.message,
