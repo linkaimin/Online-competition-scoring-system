@@ -206,14 +206,16 @@ export default {
       handledocument(index, row){
         this.dialogFormVisible = true
         var that = this
+        let flag = true
         that.fileName = [{name:'该项目没有文件！'}];
        this.$axios.get('/document/preview/'+row.projectId, {
   
      }).then(function (response){
       if (response.data.resultCode === 200) {
           that.file = response.data.data.file
-          console.log(response.data.data)
+          console.log(response.data.data.url)
            if(that.file.length !== 0){
+             flag = false
             that.fileName = []
           for(let item of that.file){
             that.fileName.push({
@@ -222,9 +224,14 @@ export default {
             })
           }
           }
-          if (response.data.data.url != null && response.data.data.url != '') {
-               that.fileName = []
+          if (flag === false && response.data.data.url.length != 0) {
               that.fileName.push({
+                name : "网络文件 : " + response.data.data.url,
+                url : response.data.data.url
+              })
+          }else  if(flag === true && response.data.data.url.length != 0){
+            that.fileName = []
+            that.fileName.push({
                 name : "网络文件 : " + response.data.data.url,
                 url : response.data.data.url
               })
