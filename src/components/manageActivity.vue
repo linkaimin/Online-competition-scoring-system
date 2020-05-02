@@ -42,6 +42,7 @@
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                 <el-menu-item index="/newAdmin"><i class="el-icon-tickets"></i>新增管理员</el-menu-item>
                 <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 
@@ -66,7 +67,7 @@
 <el-button id="findBtn"  type="primary" plain @click="select">确定</el-button>  
    </div>
         <el-table     
-    :data=tableData
+     :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
     style="width: 100%">
     <el-table-column
       label="活动编号"
@@ -123,6 +124,12 @@
       </template>
     </el-table-column>
   </el-table>
+    <el-pagination
+    layout="prev, pager, next"
+    @current-change="current_change"
+    :page-size="pagesize" 
+    :total=total>
+  </el-pagination>
   </div>
 
       </el-container>
@@ -155,12 +162,21 @@ export default {
        activity:'',
        fileName:[],
        NewtableData:[],
+        tableData: [],
+        find:"",
+        total:1000,//默认数据总数
+        pagesize:8,//每页的数据条数
+        currentPage:1,//默认开始页面
+
     }
   },
    mounted(){
     this.select1()
   },
   methods: {
+         current_change:function(currentPage){
+        this.currentPage = currentPage;
+      },
     handleExcel(index, row){
       var that = this
       if(row.button === true){ 
@@ -181,6 +197,7 @@ export default {
        console.log(response);
         console.log(that.options)
       if (response.data.resultCode === 200) {
+          that.total = response.data.data.length;
          that.options = response.data.data;
        console.log(that.options)
       }

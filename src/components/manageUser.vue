@@ -41,6 +41,7 @@
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                 <el-menu-item index="/newAdmin"><i class="el-icon-tickets"></i>新增管理员</el-menu-item>
                 <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 
@@ -52,7 +53,7 @@
         </el-aside>            
         <div  id="table">
         <el-table     
-    :data="tableData"
+     :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
     style="width: 100%">
     
     <el-table-column
@@ -82,14 +83,22 @@
     </el-table-column>
      <el-table-column
       label="所属单位"
-      width="300">
+      width="250">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.unit }}</el-tag>
           </div>
       </template>
     </el-table-column>
-
+ <el-table-column
+      label="账号属性"
+      width="100">
+      <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.role }}</el-tag>
+          </div>
+      </template>
+    </el-table-column>
     <el-table-column label="操作">
       <template slot-scope="scope">
          <el-button
@@ -105,6 +114,12 @@
       </template>
     </el-table-column>
   </el-table>
+      <el-pagination
+    layout="prev, pager, next"
+    @current-change="current_change"
+    :page-size="pagesize" 
+    :total=total>
+  </el-pagination>
   </div>
       </el-container>
     </el-container>
@@ -119,13 +134,19 @@ export default {
        tableData: [],
        find:"",
        dialogFormVisible:false,
-       row:{}
+       row:{},
+        total:1000,//默认数据总数
+        pagesize:8,//每页的数据条数
+        currentPage:1,//默认开始页面
     }
   },
   mounted(){
   this.select()
   },
   methods: {
+          current_change:function(currentPage){
+        this.currentPage = currentPage;
+      },
     handle(index,row){
       this.dialogFormVisible = true;
       this.row = row;
@@ -169,18 +190,21 @@ export default {
       select(){
      var that = this;
      this.$axios({
-      data:{
-	    "role" : "2"
-      },
       method:"post",
       url:'/user'
      })
      .then(function (response){
        console.log(response);
       if (response.data.resultCode === 200) {
+      for(let i of response.data.data){
+        if(i.role == 1)i.role = '专家'
+         if(i.role == 2)i.role = '管理员'
+      }
         that.tableData = response.data.data
+         that.total = response.data.data.length;
        console.log(response.data.data)
       }
+
      })
    },
        handleEdit(index, row) {

@@ -41,6 +41,7 @@
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                 <el-menu-item index="/newAdmin"><i class="el-icon-tickets"></i>新增管理员</el-menu-item>
                 <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 
@@ -70,7 +71,7 @@
    
       <el-table-column
       label="相关信息"
-      width="180">
+      width="100">
  
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
@@ -114,25 +115,34 @@
         <el-button
           size="mini"
           @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
+          <el-button
+          size="mini"
+          @click="handleyulan(scope.$index,scope.row)">预览</el-button>
+          <el-button
+          size="mini"
+          @click="handledownload(scope.$index,scope.row)">下载</el-button>
         <el-button
           size="mini"
           type="danger"
           @click="handleDelete(scope.$index,scope.row.activityId)">删除</el-button>
       </template>
+    
     </el-table-column>
-    <div class="block">
-  <span class="demonstration">页数较少时的效果</span>
-  <el-pagination
-    layout="prev, pager, next"
-    :total="50">
-  </el-pagination>
-</div>
+  
   </el-table>
+    <el-dialog title="预览文件"  :visible.sync="dialogFormVisible">
+     <div v-html=fileContent></div>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
   <div class="block">
  
   <el-pagination
     layout="prev, pager, next"
     @current-change="current_change"
+    :page-size="pagesize"  
     :total=total>
   </el-pagination>
 </div>
@@ -143,15 +153,19 @@
 </template>
 
 <script>
+import XLSX from 'xlsx'
 export default {
 
   data(){
     return{
         tableData: [],
         find:"",
-        total:1000,//默认数据总数
         pagesize:8,//每页的数据条数
         currentPage:1,//默认开始页面
+        total:100,
+        dialogFormVisible :false,
+        fileContent:{},
+        flag : 0
     }
   },
   mounted(){
@@ -189,8 +203,8 @@ export default {
        console.log(response);
       if (response.data.resultCode === 200) {
         that.tableData = response.data.data
-       console.log(response.data.data)
-       that.total = response.data.data.length;
+       console.log(response.data.data.length)
+       that.total = response.data.data.length
        for(let i of that.tableData){
        i.newstartTime = that.convertUTCTimeToLocalTime(i.startTime);
        i.newendTime = that.convertUTCTimeToLocalTime(i.endTime);
@@ -198,6 +212,72 @@ export default {
        console.log(that.tableData)
       }
      })
+   },
+   handleyulan(index, row){
+          var that = this
+      this.$axios.get(`/excel/activity/export/${row.activityId}`, {
+  })
+  .then(function (response) {
+    console.log(response.data.resultCode)
+      if (response.data.resultCode !== 500) {
+
+
+            that.dialogFormVisible = true; 
+            that.$axios.get(`/excel/activity/export/${row.activityId}`,{  
+                responseType: 'blob'
+            })
+            .then((response) => {
+                console.log(response)
+                var reader = new FileReader();  
+                reader.onload = e => {  
+                    //预处理  
+                    var binary = '';  
+                    var buf = new Uint8Array(e.target.result);  
+                    var length = buf.byteLength;  
+                    for (var i = 0; i < length; i++) {  
+                    binary += String.fromCharCode(buf[i]);  
+                    }  //读取excel  
+                    const wb = XLSX.read(binary, {type: "binary"});  
+                    console.log("wb",wb);  
+                    //抓取第一个sheet
+                    let wsname = wb.SheetNames[0];  
+                    let ws = wb.Sheets[wsname];
+                    
+                    // 用来赋值 this.fileContent = XLSX.utils.sheet_to_html(ws);
+                    that.fileContent = XLSX.utils.sheet_to_html(ws);
+                };
+                reader.readAsArrayBuffer(response.data);  
+            }) 
+            .catch(error => {  
+                console.log(error);  
+            });
+        return that.fileContent; 
+
+      }else{
+         that.$message({
+                message: '该活动下的项目还没有让全部专家评分！',
+                type: 'error',
+                duration: 2000
+              })   
+      }
+ })
+   },
+   handledownload(index, row){
+      var that = this
+      this.$axios.get(`/excel/activity/export/${row.activityId}`, {
+  })
+  .then(function (response) {
+    console.log(response.data.resultCode)
+      if (response.data.resultCode === 500) {
+                that.$message({
+                message: '该活动下的项目还没有让全部专家评分！',
+                type: 'error',
+                duration: 2000
+              })   
+        } else {
+  window.open(`http://140.143.194.109:8080/jwc/excel/activity/export/${row.activityId}`)  
+        }
+  })
    },
        handleEdit(index, row) {
          console.log(row)

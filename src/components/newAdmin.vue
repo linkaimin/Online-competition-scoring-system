@@ -52,7 +52,7 @@
         </el-aside>
                    <el-card id="card" class="box-card">
               <div slot="header" class="clearfix">
-                <span>新增用户</span> 
+                <span>新增管理员</span> 
               </div>
               <div class="item">
               姓名：<el-input class="nu" v-model="name" placeholder="请输入内容"></el-input>
@@ -127,13 +127,13 @@ export default {
        if (that.name!='' && that.phone!='' &&that.password !='') {  
       this.$axios({
       data: {
-        unit:this.unit,
+      unit:this.unit,
       userName:this.name,
       phone:this.phone,
       password:this.password
       },
       method:'post',
-    url:'/register ',
+    url:'/admin/add',
     headers: {
             'Content-Type': 'application/json',
       }

@@ -40,6 +40,7 @@
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                 <el-menu-item index="/newAdmin"><i class="el-icon-tickets"></i>新增管理员</el-menu-item>
                 <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 

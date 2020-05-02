@@ -41,6 +41,7 @@
               <template slot="title"><i class="el-icon-location"></i>用户管理</template>
               <el-menu-item-group>
                 <el-menu-item index="/newUser"><i class="el-icon-tickets"></i>新增用户</el-menu-item>
+                <el-menu-item index="/newAdmin"><i class="el-icon-tickets"></i>新增管理员</el-menu-item>
                 <el-menu-item index="/manageUser"><i class="el-icon-tickets"></i>用户信息管理</el-menu-item>
               
 
@@ -85,7 +86,7 @@
     style="width: 100%">
     <el-table-column
       label="评分用户名"
-      width="250">
+      width="150">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.userName }}</el-tag>
@@ -94,7 +95,7 @@
     </el-table-column>
     <el-table-column
       label="评分用户账号"
-      width="250">
+      width="150">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.phone }}</el-tag>
@@ -103,7 +104,7 @@
     </el-table-column>
      <el-table-column
       label="分数"
-      width="250">
+      width="100">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.sum }}</el-tag>
@@ -112,7 +113,7 @@
     </el-table-column>
      <el-table-column
       label="统计方式"
-      width="200">
+      width="450">
       <template slot-scope="scope">
           <div slot="reference" class="name-wrapper">
             <el-tag size="medium">{{ scope.row.type }}</el-tag>
@@ -120,7 +121,7 @@
       </template>
       
     </el-table-column>
-    <el-table-column label="操作">
+    <el-table-column label="操作" >
       <template slot-scope="scope">
         <el-button
           size="mini"
@@ -229,7 +230,17 @@ export default {
          
          for(let i of that.tableData){
            for(let j of i.score){
-            sum += Number(j.part) * Number(j.value);
+            sum += Number(j.value);
+            if(i.type =='1'){
+              i.type = '所有专家总分取平均分'
+            }else if(i.type =='2'){
+ i.type = '所有专家每一项打分先取平均分，然后取和'
+            }else if(i.type =='3'){
+ i.type = '所有专家每一项打分去掉一对最高分和最低分后每一项平均分，然后取和'
+            }else if(i.type =='4'){
+ i.type = '所有专家总分去掉一对最高分和对低分后取平均分'
+            }
+            
          }
            i.sum = sum;
            sum = 0;

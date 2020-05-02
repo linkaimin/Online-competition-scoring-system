@@ -13,6 +13,7 @@ import updateProject from '@/components/updateProject'
 import updateActivity from '@/components/updateActivity'
 import manage from '@/components/manage'
 import updateUser from '@/components/updateUser'
+import newAdmin from '@/components/newAdmin'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.prototype.$axios = axios;
@@ -30,6 +31,11 @@ export default new Router({
       path: '/manage',
       name: 'manage',
       component: manage
+    },
+    {
+      path: '/newAdmin',
+      name: 'newAdmin',
+      component: newAdmin
     },
     {
       path: '/updateActivity',
